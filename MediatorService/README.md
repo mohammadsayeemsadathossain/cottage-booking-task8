@@ -24,8 +24,3 @@ Complete Eclipse project for the Mediator Service Client component.
 2. Configure Java 8 JDK
 3. Add Tomcat 9.0 runtime
 4. Deploy and run
-
-**Author:** Mohammad Sayeem Sadat Hossain  
-**Date:** November 30, 2025  
-**Course:** TIES4520  
-**Task:** Task 7-2
