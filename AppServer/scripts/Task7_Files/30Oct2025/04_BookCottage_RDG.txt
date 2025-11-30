@@ -1,0 +1,38 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix cf:    <http://localhost:8080/cottageBooking/onto/CottageOntology.owl#> .
+@prefix data:  <http://localhost:8080/cottageBooking/data/cottage#> .
+@prefix res:   <http://localhost:8080/CottageService/> .
+
+#################################################################
+# RDG for Book Cottage API
+#################################################################
+
+res:cottageBookingService
+  rdf:type sswap:Resource ;
+  sswap:providedBy res:provider ;
+  sswap:name "Cottage Booking Service (domain-only)" ;
+  sswap:oneLineDescription "Book cottages with provided details." ;
+  sswap:operatesOn [
+    rdf:type sswap:Graph ;
+    sswap:hasMapping [
+      rdf:type sswap:Subject , cf:BookingReq ;
+
+      cf:bookerName   "" ;
+	  cf:bookingNumber	  "" ;
+      cf:cottageID    "" ;
+      cf:startDay     "" ;
+      cf:requiredDays "" ;
+
+      sswap:mapsTo [
+        rdf:type sswap:Object , cf:BookingResp ;
+
+        cf:bookerName   "" ;
+		cf:bookingNumber "" ;
+        cf:cottageID    "" ;
+        cf:startDay     "" ;
+        cf:requiredDays "" ;
+        cf:bookingStatus "";
+      ]
+    ]
+  ] .

@@ -1,0 +1,29 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix cf:    <http://localhost:8080/cottageBooking/onto/CottageOntology.owl#> .
+@prefix data:  <http://localhost:8080/cottageBooking/data/cottage#> .
+@prefix res:   <http://localhost:8080/CottageService/> .
+
+# RIG — invocation matching your RDG property names
+# (Edit the literal values to the query you want to run.)
+res:cottageBookingService
+  rdf:type sswap:Resource ;
+   sswap:providedBy res:provider ;
+  sswap:name "Cottage Booking Search Service (domain-only)" ;
+  sswap:oneLineDescription "Find cottages by city/capacity/bedrooms/distances and propose bookings for requested dates." ;
+  sswap:operatesOn [
+    rdf:type sswap:Graph ;
+    sswap:hasMapping [
+      rdf:type sswap:Subject , cf:Cottage ;
+	  cf:bookerName				"Alice";
+      cf:requiredPlaces          "4" ;
+      cf:requiredBedrooms        "2" ;
+      cf:maxLakeDistanceMeters   "200" ;
+      cf:maxCityDistanceMeters   "6000" ;
+      cf:startDay                "2025-11-10" ;   # dd.mm.yyyy was the Task-6 spec; here ISO is fine too
+      cf:requiredDays            "5" ;
+      cf:maxStartShiftDays       "2" ;
+
+      sswap:mapsTo [ rdf:type sswap:Object , cf:Cottage ]
+    ]
+  ] .

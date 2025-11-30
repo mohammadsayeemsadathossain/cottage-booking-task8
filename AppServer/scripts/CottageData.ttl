@@ -1,0 +1,94 @@
+@prefix : <http://localhost:8080/cottageBooking/onto/CottageOntology.owl#> .
+@prefix cottage: <http://localhost:8080/cottageBooking/data/cottage#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+cottage:Cottage01 rdf:type :Cottage ;
+    :cottageID "C001" ;
+    :address "123 Lake Road, Jyväskylä, Finland" ;
+    :imageURL "https://example.com/images/cottage01.jpg" ;
+    :capacity 6 ;
+    :numberOfBedrooms 3 ;
+    :distanceToLake 50 ;
+    :hasLocation cottage:Location01 ;
+    :nearestCity cottage:City01 .
+
+cottage:Location01 rdf:type :Location ;
+    :cityName "Jyväskylä" ;
+    :distanceToCity 5000 .
+
+cottage:City01 rdf:type :Location ;
+    :cityName "Jyväskylä" ;
+    :distanceToCity 5000 .
+
+cottage:Cottage02 rdf:type :Cottage ;
+    :cottageID "C002" ;
+    :address "456 Forest Path, Muurame, Finland" ;
+    :imageURL "https://example.com/images/cottage02.jpg" ;
+    :capacity 4 ;
+    :numberOfBedrooms 2 ;
+    :distanceToLake 200 ;
+    :hasLocation cottage:Location02 ;
+    :nearestCity cottage:City02 .
+
+cottage:Location02 rdf:type :Location ;
+    :cityName "Muurame" ;
+    :distanceToCity 2000 .
+
+cottage:City02 rdf:type :Location ;
+    :cityName "Muurame" ;
+    :distanceToCity 2000 .
+
+cottage:Cottage03 rdf:type :Cottage ;
+    :cottageID "C003" ;
+    :address "789 Mountain View, Laukaa, Finland" ;
+    :imageURL "https://example.com/images/cottage03.jpg" ;
+    :capacity 8 ;
+    :numberOfBedrooms 4 ;
+    :distanceToLake 100 ;
+    :hasLocation cottage:Location03 ;
+    :nearestCity cottage:City03 .
+
+cottage:Location03 rdf:type :Location ;
+    :cityName "Laukaa" ;
+    :distanceToCity 8000 .
+
+cottage:City03 rdf:type :Location ;
+    :cityName "Laukaa" ;
+    :distanceToCity 8000 .
+
+cottage:Cottage04 rdf:type :Cottage ;
+    :cottageID "C004" ;
+    :address "321 Riverside Lane, Jyväskylä, Finland" ;
+    :imageURL "https://example.com/images/cottage04.jpg" ;
+    :capacity 5 ;
+    :numberOfBedrooms 2 ;
+    :distanceToLake 20 ;
+    :hasLocation cottage:Location04 ;
+    :nearestCity cottage:City04 .
+
+cottage:Location04 rdf:type :Location ;
+    :cityName "Jyväskylä" ;
+    :distanceToCity 3000 .
+
+cottage:City04 rdf:type :Location ;
+    :cityName "Jyväskylä" ;
+    :distanceToCity 3000 .
+
+cottage:Cottage05 rdf:type :Cottage ;
+    :cottageID "C005" ;
+    :address "654 Sunset Boulevard, Hankasalmi, Finland" ;
+    :imageURL "https://example.com/images/cottage05.jpg" ;
+    :capacity 10 ;
+    :numberOfBedrooms 5 ;
+    :distanceToLake 500 ;
+    :hasLocation cottage:Location05 ;
+    :nearestCity cottage:City05 .
+
+cottage:Location05 rdf:type :Location ;
+    :cityName "Hankasalmi" ;
+    :distanceToCity 12000 .
+
+cottage:City05 rdf:type :Location ;
+    :cityName "Hankasalmi" ;
+    :distanceToCity 12000 .

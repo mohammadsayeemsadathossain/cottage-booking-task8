@@ -1,0 +1,220 @@
+@prefix cf: <http://localhost:8080/cottageBooking/onto/CottageOntology.owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://localhost:8080/cottageBooking/onto/CottageOntology.owl> a <http://www.w3.org/2002/07/owl#Ontology> .
+
+cf:address a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range xsd:string .
+
+cf:bookerName a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Booking ;
+    rdfs:range xsd:string .
+
+cf:bookingNumber a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Booking ;
+    rdfs:range xsd:string .
+
+cf:capacity a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range xsd:integer .
+
+cf:cityName a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Location ;
+    rdfs:range xsd:string .
+
+cf:cottageID a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range xsd:string .
+
+cf:distanceToCity a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Location ;
+    rdfs:range xsd:integer .
+
+cf:distanceToLake a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range xsd:integer .
+
+cf:endDate a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Booking ;
+    rdfs:range xsd:string .
+
+cf:hasBooking a <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range cf:Booking .
+
+cf:hasLocation a <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range cf:Location .
+
+cf:imageURL a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range xsd:string .
+
+cf:isAvailable a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Booking ;
+    rdfs:range xsd:boolean .
+
+cf:nearestCity a <http://www.w3.org/2002/07/owl#ObjectProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range cf:Location .
+
+cf:numberOfBedrooms a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Cottage ;
+    rdfs:range xsd:integer .
+
+cf:numberOfDays a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Booking ;
+    rdfs:range xsd:integer .
+
+cf:startDate a <http://www.w3.org/2002/07/owl#DatatypeProperty> ;
+    rdfs:domain cf:Booking ;
+    rdfs:range xsd:string .
+
+cf:Location a <http://www.w3.org/2002/07/owl#Class> .
+
+cf:Booking a <http://www.w3.org/2002/07/owl#Class> .
+
+cf:Cottage a <http://www.w3.org/2002/07/owl#Class> .
+
+# New Classes for API
+
+cf:SearchReq a owl:Class ;
+    rdfs:label "Search Request" ;
+    rdfs:comment "Input structure for searching cottages." .
+
+cf:SearchResp a owl:Class ;
+    rdfs:label "Search Response" ;
+    rdfs:comment "Output structure returned by the Search Cottage service." .
+
+cf:BookingReq a owl:Class ;
+    rdfs:label "Booking Request" ;
+    rdfs:comment "Input structure for booking a cottage." .
+
+cf:BookingResp a owl:Class ;
+    rdfs:label "Booking Response" ;
+    rdfs:comment "Output structure returned after booking a cottage." .
+
+# New Datatype Properties
+
+# cf:bookerName a owl:DatatypeProperty .
+cf:numberOfPeople a owl:DatatypeProperty .
+cf:numberOfBedrooms a owl:DatatypeProperty .
+cf:maxDistanceFromLake a owl:DatatypeProperty .
+cf:nearestCity a owl:DatatypeProperty .
+cf:numberOfDays a owl:DatatypeProperty .
+cf:startDate a owl:DatatypeProperty .
+cf:possibleShift a owl:DatatypeProperty .
+
+cf:bookingNumber a owl:DatatypeProperty .
+cf:cottageID a owl:DatatypeProperty .
+cf:cottageName a owl:DatatypeProperty .
+cf:cottageAddress a owl:DatatypeProperty .
+cf:imageURL a owl:DatatypeProperty .
+cf:capacity a owl:DatatypeProperty .
+cf:distanceFromLake a owl:DatatypeProperty .
+cf:cityName a owl:DatatypeProperty .
+cf:cityDistance a owl:DatatypeProperty .
+cf:bookingStartDate a owl:DatatypeProperty .
+cf:bookingEndDate a owl:DatatypeProperty .
+cf:requiredDays a owl:DatatypeProperty .
+cf:startDay a owl:DatatypeProperty .
+cf:bookingStatus a owl:DatatypeProperty .
+
+
+# Search service data structures
+
+# Input properties (domain = SearchReq)
+cf:numberOfPeople a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchReq ;
+    rdfs:range xsd:integer .
+
+cf:numberOfBedrooms a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchReq , cf:SearchResp ;
+    rdfs:range xsd:integer .
+
+cf:maxDistanceFromLake a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchReq ;
+    rdfs:range xsd:float .
+
+cf:nearestCity a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchReq ;
+    rdfs:range xsd:string .
+
+cf:numberOfDays a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchReq ;
+    rdfs:range xsd:integer .
+
+cf:startDate a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchReq ;
+    rdfs:range xsd:date .
+
+cf:possibleShift a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchReq ;
+    rdfs:range xsd:integer .
+
+# Output properties (domain = SearchResp)
+cf:bookingNumber a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp, SearchReq, cf:BookingReq , cf:BookingResp ;
+    rdfs:range xsd:string .
+
+cf:cottageName a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:string .
+
+cf:cottageAddress a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:string .
+
+cf:imageURL a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:anyURI .
+
+cf:capacity a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:integer .
+
+cf:distanceFromLake a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:float .
+
+cf:cityName a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:string .
+
+cf:cityDistance a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:float .
+
+cf:bookingStartDate a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:date .
+
+cf:bookingEndDate a owl:DatatypeProperty ;
+    rdfs:domain cf:SearchResp ;
+    rdfs:range xsd:date .
+
+
+# Booking service data structures
+
+cf:bookerName a owl:DatatypeProperty ;
+    rdfs:domain cf:BookingReq , cf:BookingResp, cf:SearchReq, cf:SearchResp ;
+    rdfs:range xsd:string .
+
+cf:cottageID a owl:DatatypeProperty ;
+    rdfs:domain cf:BookingReq , cf:BookingResp, cf:SearchResp ;
+    rdfs:range xsd:string .
+
+cf:startDay a owl:DatatypeProperty ;
+    rdfs:domain cf:BookingReq , cf:BookingResp ;
+    rdfs:range xsd:date .
+
+cf:requiredDays a owl:DatatypeProperty ;
+    rdfs:domain cf:BookingReq , cf:BookingResp ;
+    rdfs:range xsd:integer .
+
+cf:bookingStatus a owl:DatatypeProperty ;
+    rdfs:domain cf:BookingResp ;
+    rdfs:range xsd:string .
+

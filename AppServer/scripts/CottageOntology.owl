@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://localhost:8080/cottageBooking/onto/CottageOntology.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     ontologyIRI="http://localhost:8080/cottageBooking/onto/CottageOntology.owl">
+    <Prefix name="" IRI="http://www.semanticweb.org/sayeem09/ontologies/2025/9/untitled-ontology-23/"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="#Booking"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Cottage"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Location"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasBooking"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasLocation"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#nearestCity"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#address"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#bookerName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#bookingNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#capacity"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#cityName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#cottageID"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#distanceToCity"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#distanceToLake"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#endDate"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#imageURL"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#isAvailable"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#numberOfBedrooms"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#numberOfDays"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#startDate"/>
+    </Declaration>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasBooking"/>
+        <Class IRI="#Cottage"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasLocation"/>
+        <Class IRI="#Cottage"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#nearestCity"/>
+        <Class IRI="#Cottage"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasBooking"/>
+        <Class IRI="#Booking"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasLocation"/>
+        <Class IRI="#Location"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#nearestCity"/>
+        <Class IRI="#Location"/>
+    </ObjectPropertyRange>
+    <DataPropertyDomain>
+        <DataProperty IRI="#address"/>
+        <Class IRI="#Cottage"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#bookerName"/>
+        <Class IRI="#Booking"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#bookingNumber"/>
+        <Class IRI="#Booking"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#capacity"/>
+        <Class IRI="#Cottage"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#cityName"/>
+        <Class IRI="#Location"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#cottageID"/>
+        <Class IRI="#Cottage"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#distanceToCity"/>
+        <Class IRI="#Location"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#distanceToLake"/>
+        <Class IRI="#Cottage"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#endDate"/>
+        <Class IRI="#Booking"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#imageURL"/>
+        <Class IRI="#Cottage"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#isAvailable"/>
+        <Class IRI="#Booking"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#numberOfBedrooms"/>
+        <Class IRI="#Cottage"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#numberOfDays"/>
+        <Class IRI="#Booking"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#startDate"/>
+        <Class IRI="#Booking"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="#address"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#bookerName"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#bookingNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#capacity"/>
+        <Datatype abbreviatedIRI="xsd:integer"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#cityName"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#cottageID"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#distanceToCity"/>
+        <Datatype abbreviatedIRI="xsd:integer"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#distanceToLake"/>
+        <Datatype abbreviatedIRI="xsd:integer"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#endDate"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#imageURL"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#isAvailable"/>
+        <Datatype abbreviatedIRI="xsd:boolean"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#numberOfBedrooms"/>
+        <Datatype abbreviatedIRI="xsd:integer"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#numberOfDays"/>
+        <Datatype abbreviatedIRI="xsd:integer"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#startDate"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+

@@ -1,0 +1,136 @@
+@prefix cf: <http://localhost:8080/cottageBooking/onto/CottageOntology.owl#> .
+@prefix ns2: <urn:> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://localhost:8080/cottageBooking/data/cottage#C007> a cf:Cottage ;
+    cf:address "12 Birch Grove, Korpilahti, Finland" ;
+    cf:capacity 8 ;
+    cf:cottageID "C007" ;
+    cf:distanceToLake 150 ;
+    cf:imageURL "cottage06.jpg" ;
+    cf:nearestCity <http://localhost:8080/cottageBooking/data/cottage#C007_City> ;
+    cf:numberOfBedrooms 4 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Cottage01> a cf:Cottage ;
+    cf:address "123 Lake Road, Jyväskylä, Finland" ;
+    cf:capacity 6 ;
+    cf:cottageID "C001" ;
+    cf:distanceToLake 50 ;
+    cf:hasBooking <http://localhost:8080/cottageBooking/data/cottage#Booking_550e8400-e29b-41d4-a716-446655440000> ;
+    cf:hasLocation <http://localhost:8080/cottageBooking/data/cottage#Location01> ;
+    cf:imageURL "cottage01.jpg" ;
+    cf:nearestCity <http://localhost:8080/cottageBooking/data/cottage#City01> ;
+    cf:numberOfBedrooms 3 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Cottage02> a cf:Cottage ;
+    cf:address "456 Forest Path, Muurame, Finland" ;
+    cf:capacity 4 ;
+    cf:cottageID "C002" ;
+    cf:distanceToLake 200 ;
+    cf:hasLocation <http://localhost:8080/cottageBooking/data/cottage#Location02> ;
+    cf:imageURL "cottage02.jpg" ;
+    cf:nearestCity <http://localhost:8080/cottageBooking/data/cottage#City02> ;
+    cf:numberOfBedrooms 2 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Cottage03> a cf:Cottage ;
+    cf:address "789 Mountain View, Laukaa, Finland" ;
+    cf:capacity 8 ;
+    cf:cottageID "C003" ;
+    cf:distanceToLake 100 ;
+    cf:hasBooking <http://localhost:8080/cottageBooking/data/cottage#Booking_2272e037-f542-4a9d-8d63-6c2fcf9745e9> ;
+    cf:hasLocation <http://localhost:8080/cottageBooking/data/cottage#Location03> ;
+    cf:imageURL "cottage03.jpg" ;
+    cf:nearestCity <http://localhost:8080/cottageBooking/data/cottage#City03> ;
+    cf:numberOfBedrooms 4 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Cottage04> a cf:Cottage ;
+    cf:address "321 Riverside Lane, Jyväskylä, Finland" ;
+    cf:capacity 5 ;
+    cf:cottageID "C004" ;
+    cf:distanceToLake 20 ;
+    cf:hasLocation <http://localhost:8080/cottageBooking/data/cottage#Location04> ;
+    cf:imageURL "cottage04.jpg" ;
+    cf:nearestCity <http://localhost:8080/cottageBooking/data/cottage#City04> ;
+    cf:numberOfBedrooms 2 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Cottage05> a cf:Cottage ;
+    cf:address "654 Sunset Boulevard, Hankasalmi, Finland" ;
+    cf:capacity 10 ;
+    cf:cottageID "C005" ;
+    cf:distanceToLake 500 ;
+    cf:hasLocation <http://localhost:8080/cottageBooking/data/cottage#Location05> ;
+    cf:imageURL "cottage05.jpg" ;
+    cf:nearestCity <http://localhost:8080/cottageBooking/data/cottage#City05> ;
+    cf:numberOfBedrooms 5 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Cottage06> a cf:Cottage ;
+    cf:address "12 Birch Grove, Korpilahti, Finland" ;
+    cf:capacity 6 ;
+    cf:cottageID "C006" ;
+    cf:distanceToLake 120 ;
+    cf:imageURL "cottage06.jpg" ;
+    cf:nearestCity <http://localhost:8080/cottageBooking/data/cottage#Cottage06_City> ;
+    cf:numberOfBedrooms 3 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Booking_2272e037-f542-4a9d-8d63-6c2fcf9745e9> a cf:Booking ;
+    cf:bookerName "Alice" ;
+    cf:bookingNumber "2272e037-f542-4a9d-8d63-6c2fcf9745e9" ;
+    cf:endDate "2025-11-08"^^xsd:date ;
+    cf:startDate "2025-11-05"^^xsd:date .
+
+<http://localhost:8080/cottageBooking/data/cottage#Booking_550e8400-e29b-41d4-a716-446655440000> a cf:Booking ;
+    cf:bookerName "Alice" ;
+    cf:bookingNumber "550e8400-e29b-41d4-a716-446655440000" ;
+    cf:endDate "2025-11-15"^^xsd:date ;
+    cf:startDate "2025-11-10"^^xsd:date .
+
+<http://localhost:8080/cottageBooking/data/cottage#C007_City> a cf:Location ;
+    cf:cityName "Kuopio" ;
+    cf:distanceToCity 0 .
+
+<http://localhost:8080/cottageBooking/data/cottage#City01> a cf:Location ;
+    cf:cityName "Jyväskylä" ;
+    cf:distanceToCity 5000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#City02> a cf:Location ;
+    cf:cityName "Muurame" ;
+    cf:distanceToCity 2000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#City03> a cf:Location ;
+    cf:cityName "Laukaa" ;
+    cf:distanceToCity 8000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#City04> a cf:Location ;
+    cf:cityName "Jyväskylä" ;
+    cf:distanceToCity 3000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#City05> a cf:Location ;
+    cf:cityName "Hankasalmi" ;
+    cf:distanceToCity 12000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Cottage06_City> a cf:Location ;
+    cf:cityName "Korpilahti" ;
+    cf:distanceToCity 0 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Location01> a cf:Location ;
+    cf:cityName "Jyväskylä" ;
+    cf:distanceToCity 5000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Location02> a cf:Location ;
+    cf:cityName "Muurame" ;
+    cf:distanceToCity 2000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Location03> a cf:Location ;
+    cf:cityName "Laukaa" ;
+    cf:distanceToCity 8000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Location04> a cf:Location ;
+    cf:cityName "Jyväskylä" ;
+    cf:distanceToCity 3000 .
+
+<http://localhost:8080/cottageBooking/data/cottage#Location05> a cf:Location ;
+    cf:cityName "Hankasalmi" ;
+    cf:distanceToCity 12000 .
+
+[] ns2:test "ok" .
+

@@ -1,0 +1,50 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix cf:    <http://localhost:8080/cottageBooking/onto/CottageOntology.owl#> .
+@prefix data:  <http://localhost:8080/cottageBooking/data/cottage#> .
+@prefix res:   <http://localhost:8080/CottageService/> .
+
+#################################################################
+# RDG for Search Cottage API
+#################################################################
+
+res:searchCottageService
+  rdf:type sswap:Resource ;
+  sswap:providedBy res:provider ;
+  sswap:name "Cottage Search Service (domain-only)" ;
+  sswap:oneLineDescription "Find cottages matching user-provided criteria." ;
+  sswap:operatesOn [
+    rdf:type sswap:Graph ;
+    sswap:hasMapping [
+      rdf:type sswap:Subject , cf:SearchReq ;
+
+      cf:bookerName          "" ;
+      cf:numberOfPeople      "" ;
+      cf:numberOfBedrooms    "" ;
+	  cf:cityName			 "" ;
+      cf:maxDistanceFromLake "" ;
+      cf:nearestCity         "" ;
+      cf:numberOfDays        "" ;
+      cf:startDate           "" ;
+      cf:possibleShift       "" ;
+
+      sswap:mapsTo [
+        rdf:type sswap:Object , cf:SearchResp ;
+
+        # Output fields for each matched cottage
+        cf:bookerName        "" ;
+        cf:bookingNumber     "" ;
+        cf:cottageID         "" ;
+        cf:cottageName       "" ;
+        cf:cottageAddress    "" ;
+        cf:imageURL          "" ;
+        cf:capacity          "" ;
+        cf:numberOfBedrooms  "" ;
+        cf:distanceFromLake  "" ;
+        cf:cityName          "" ;
+        cf:cityDistance      "" ;
+        cf:bookingStartDate  "" ;
+        cf:bookingEndDate    "" ;
+      ]
+    ]
+  ] .

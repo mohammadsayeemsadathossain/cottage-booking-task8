@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF xmlns:ns1="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#" xmlns:ns2="urn:" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage01">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <ns1:cottageID>C001</ns1:cottageID>
+    <ns1:address>123 Lake Road, Jyväskylä, Finland</ns1:address>
+    <ns1:imageURL>cottage01.jpg</ns1:imageURL>
+    <ns1:capacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</ns1:capacity>
+    <ns1:numberOfBedrooms rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</ns1:numberOfBedrooms>
+    <ns1:distanceToLake rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</ns1:distanceToLake>
+    <ns1:hasLocation rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Location01" />
+    <ns1:nearestCity rdf:resource="http://localhost:8080/cottageBooking/data/cottage#City01" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Location01">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Jyväskylä</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#City01">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Jyväskylä</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage02">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <ns1:cottageID>C002</ns1:cottageID>
+    <ns1:address>456 Forest Path, Muurame, Finland</ns1:address>
+    <ns1:imageURL>cottage02.jpg</ns1:imageURL>
+    <ns1:capacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</ns1:capacity>
+    <ns1:numberOfBedrooms rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</ns1:numberOfBedrooms>
+    <ns1:distanceToLake rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">200</ns1:distanceToLake>
+    <ns1:hasLocation rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Location02" />
+    <ns1:nearestCity rdf:resource="http://localhost:8080/cottageBooking/data/cottage#City02" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Location02">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Muurame</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#City02">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Muurame</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage03">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <ns1:cottageID>C003</ns1:cottageID>
+    <ns1:address>789 Mountain View, Laukaa, Finland</ns1:address>
+    <ns1:imageURL>cottage03.jpg</ns1:imageURL>
+    <ns1:capacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</ns1:capacity>
+    <ns1:numberOfBedrooms rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</ns1:numberOfBedrooms>
+    <ns1:distanceToLake rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</ns1:distanceToLake>
+    <ns1:hasLocation rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Location03" />
+    <ns1:nearestCity rdf:resource="http://localhost:8080/cottageBooking/data/cottage#City03" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Location03">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Laukaa</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#City03">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Laukaa</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage04">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <ns1:cottageID>C004</ns1:cottageID>
+    <ns1:address>321 Riverside Lane, Jyväskylä, Finland</ns1:address>
+    <ns1:imageURL>cottage04.jpg</ns1:imageURL>
+    <ns1:capacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</ns1:capacity>
+    <ns1:numberOfBedrooms rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</ns1:numberOfBedrooms>
+    <ns1:distanceToLake rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</ns1:distanceToLake>
+    <ns1:hasLocation rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Location04" />
+    <ns1:nearestCity rdf:resource="http://localhost:8080/cottageBooking/data/cottage#City04" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Location04">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Jyväskylä</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#City04">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Jyväskylä</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage05">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <ns1:cottageID>C005</ns1:cottageID>
+    <ns1:address>654 Sunset Boulevard, Hankasalmi, Finland</ns1:address>
+    <ns1:imageURL>cottage05.jpg</ns1:imageURL>
+    <ns1:capacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</ns1:capacity>
+    <ns1:numberOfBedrooms rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</ns1:numberOfBedrooms>
+    <ns1:distanceToLake rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">500</ns1:distanceToLake>
+    <ns1:hasLocation rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Location05" />
+    <ns1:nearestCity rdf:resource="http://localhost:8080/cottageBooking/data/cottage#City05" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Location05">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Hankasalmi</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#City05">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Hankasalmi</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12000</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage06">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <ns1:cottageID>C006</ns1:cottageID>
+    <ns1:address>12 Birch Grove, Korpilahti, Finland</ns1:address>
+    <ns1:imageURL>cottage06.jpg</ns1:imageURL>
+    <ns1:capacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</ns1:capacity>
+    <ns1:numberOfBedrooms rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</ns1:numberOfBedrooms>
+    <ns1:distanceToLake rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">120</ns1:distanceToLake>
+    <ns1:nearestCity rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Cottage06_City" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage06_City">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Korpilahti</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid-start-32eab3b5ab2d67ea7">
+    <ns2:test>ok</ns2:test>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#C007">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <ns1:cottageID>C007</ns1:cottageID>
+    <ns1:address>12 Birch Grove, Korpilahti, Finland</ns1:address>
+    <ns1:imageURL>cottage06.jpg</ns1:imageURL>
+    <ns1:capacity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</ns1:capacity>
+    <ns1:numberOfBedrooms rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</ns1:numberOfBedrooms>
+    <ns1:distanceToLake rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">150</ns1:distanceToLake>
+    <ns1:nearestCity rdf:resource="http://localhost:8080/cottageBooking/data/cottage#C007_City" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#C007_City">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <ns1:cityName>Kuopio</ns1:cityName>
+    <ns1:distanceToCity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</ns1:distanceToCity>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage01">
+    <ns1:hasBooking rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Booking_550e8400-e29b-41d4-a716-446655440000" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Booking_550e8400-e29b-41d4-a716-446655440000">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <ns1:bookingNumber>550e8400-e29b-41d4-a716-446655440000</ns1:bookingNumber>
+    <ns1:bookerName>Alice</ns1:bookerName>
+    <ns1:startDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-11-10</ns1:startDate>
+    <ns1:endDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-11-15</ns1:endDate>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Cottage03">
+    <ns1:hasBooking rdf:resource="http://localhost:8080/cottageBooking/data/cottage#Booking_2272e037-f542-4a9d-8d63-6c2fcf9745e9" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/data/cottage#Booking_2272e037-f542-4a9d-8d63-6c2fcf9745e9">
+    <rdf:type rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <ns1:bookingNumber>2272e037-f542-4a9d-8d63-6c2fcf9745e9</ns1:bookingNumber>
+    <ns1:bookerName>Alice</ns1:bookerName>
+    <ns1:startDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-11-05</ns1:startDate>
+    <ns1:endDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2025-11-08</ns1:endDate>
+  </rdf:Description>
+</rdf:RDF>

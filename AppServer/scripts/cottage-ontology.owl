@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#hasBooking">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#hasLocation">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#nearestCity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#address">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#bookerName">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#bookingNumber">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#capacity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#cityName">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#cottageID">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#distanceToCity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#distanceToLake">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#endDate">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#imageURL">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#isAvailable">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#numberOfBedrooms">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#numberOfDays">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#startDate">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty" />
+    <rdfs:domain rdf:resource="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking" />
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Booking">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Cottage">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class" />
+  </rdf:Description>
+  <rdf:Description rdf:about="http://localhost:8080/cottageBooking/onto/CottageOntology.owl#Location">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class" />
+  </rdf:Description>
+</rdf:RDF>

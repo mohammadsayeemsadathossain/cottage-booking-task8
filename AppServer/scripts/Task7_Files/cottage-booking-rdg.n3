@@ -1,0 +1,37 @@
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix cf:    <http://localhost:8080/cottageBooking/onto/CottageOntology.owl#> .
+@prefix data:  <http://localhost:8080/cottageBooking/data/cottage#> .
+@prefix res:   <http://localhost:8080/CottageService/> .
+
+# RDG — describes the service shape (no concrete values here)
+# Subject = cf:Cottage (used as filter holder) + a requested cf:Booking node
+# Object  = cf:Cottage (matched cottages); each result may include a created cf:Booking via cf:hasBooking
+
+res:cottageBookingService
+  rdf:type sswap:Resource ;
+  sswap:providedBy res:provider ;
+  sswap:name "Cottage Booking add Service (domain-only)" ;
+  sswap:oneLineDescription "Book cottages by given detail." ;
+  sswap:operatesOn [
+    rdf:type sswap:Graph ;
+    sswap:hasMapping [
+      rdf:type sswap:Subject , cf:Booking ;
+
+	# Name of Booker
+      cf:bookerName "" ;
+
+      # The Cottage Unique ID
+      cf:cottageID "" ;
+
+      # Start Day
+      cf:startDay "" ;
+
+      # Required number of days
+      cf:requiredDays "" ;
+
+      sswap:mapsTo [
+        rdf:type sswap:Object , cf:Booking
+      ]
+    ]
+  ] .
