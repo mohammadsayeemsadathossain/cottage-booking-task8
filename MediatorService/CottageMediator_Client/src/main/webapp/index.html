@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cottage Booking Mediator Service</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+
+    <div class="container">
+        <header>
+            <h1>🏡 Cottage Booking Service</h1>
+            <p>Find your perfect lakeside cottage getaway in Finland</p>
+        </header>
+
+        <!-- SERVICE URL SECTION (New for Task 7) -->
+        <div class="service-url-section">
+            <h2>🔗 Remote Service Configuration</h2>
+            <div class="form-group">
+                <label for="serviceURL">SSWAP Cottage Service URL: <span class="required">*</span></label>
+                <input type="text" 
+                       id="serviceURL" 
+                       name="serviceURL" 
+                       placeholder="http://localhost:8080/CottageService/searchCottageService"
+                       value="http://localhost:8080/CottageService/searchCottageService">
+                <p class="help-text">📍 Enter the URL of the remote SSWAP Cottage Booking Service</p>
+            </div>
+        </div>
+
+        <!-- SEARCH FORM SECTION -->
+        <div class="booking-form">
+            <h2>Search for Available Cottages</h2>
+
+            <div class="form-group">
+                <label for="bookerName">Your Name: <span class="required">*</span></label>
+                <input type="text" id="bookerName" name="bookerName" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="numPeople">Number of People: <span class="required">*</span></label>
+                    <input type="number" id="numPeople" name="numPeople" min="1" max="20" placeholder="e.g., 4"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="numBedrooms">Number of Bedrooms: <span class="required">*</span></label>
+                    <input type="number" id="numBedrooms" name="numBedrooms" min="1" max="10" placeholder="e.g., 2"
+                        required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="maxDistLake">Max Distance to Lake (meters): <span class="required">*</span></label>
+                    <input type="number" id="maxDistLake" name="maxDistLake" min="0" placeholder="e.g., 500" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">Nearest City:</label>
+                    <input type="text" id="city" name="city" placeholder="e.g., Jyväskylä (optional)">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="maxDistCity">Max Distance to City (meters): <span class="required">*</span></label>
+                    <input type="number" id="maxDistCity" name="maxDistCity" min="0" placeholder="e.g., 10000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="numDays">Number of Days: <span class="required">*</span></label>
+                    <input type="number" id="numDays" name="numDays" min="1" placeholder="e.g., 7" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startDate">Starting Date: <span class="required">*</span></label>
+                    <input type="date" id="startDate" name="startDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateShift">Date Flexibility (+/- days): <span class="required">*</span></label>
+                    <input type="number" id="dateShift" name="dateShift" min="0" max="30" placeholder="e.g., 3"
+                        required>
+                </div>
+            </div>
+
+            <button type="button" class="submit-btn" onclick="searchCottages()">
+                <span class="btn-text">Search Available Cottages</span>
+                <span class="btn-loader" style="display: none;">Searching...</span>
+            </button>
+        </div>
+
+        <!-- RESULTS SECTION -->
+        <div id="results" class="results-section" style="display: none;">
+            <h2>Available Cottages</h2>
+            <div id="cottageList" class="cottage-list">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="mediatorClient.js"></script>
+</body>
+
+</html>
