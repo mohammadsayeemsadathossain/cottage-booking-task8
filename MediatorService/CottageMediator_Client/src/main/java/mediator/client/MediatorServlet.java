@@ -309,7 +309,7 @@ public class MediatorServlet extends HttpServlet {
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(15000);
 
-            conn.setRequestProperty("Content-Type", contentType + "; charset=UTF-8");
+            conn.setRequestProperty("Content-Type", contentType);
             conn.setRequestProperty("Accept", "text/turtle");
 
             conn.getOutputStream().write(body.getBytes(StandardCharsets.UTF_8));
