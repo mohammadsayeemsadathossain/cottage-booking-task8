@@ -37,6 +37,9 @@ public class SswapService {
     @Value("${sswap.namespace.sswap}")
     private String SSWAP;
 
+    @Value("${img.baseurl}")
+    private String IMAGE_BASE_URL;
+    
     /** Helper to get the first value of a property for the input subject URI. */
     private String getFirstValue(Model model, ValueFactory vf, Resource subject, String predicateLocalName) {
         return model.filter(
@@ -148,7 +151,7 @@ public class SswapService {
             output.append("                cf:cottageID \"").append(sug.getCottageID()).append("\" ;\n");
             output.append("                cf:cottageName \"Cottage ").append(sug.getCottageID()).append("\" ;\n");
             output.append("                cf:cottageAddress \"").append(sug.getAddress()).append("\" ;\n");
-            output.append("                cf:imageURL \"").append(sug.getImageURL()).append("\" ;\n");
+            output.append("                cf:imageURL \"").append(IMAGE_BASE_URL).append(sug.getImageURL()).append("\" ;\n");
             output.append("                cf:cityName \"").append(sug.getCityName()).append("\" ;\n");
             
             // Output Fields (Typed Literals)
