@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Cottage Mediator Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .section h2 {
+            color: #764ba2;
+            margin-top: 0;
+            border-bottom: 2px solid #764ba2;
+            padding-bottom: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: inline-block;
+            width: 200px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .service-url-input {
+            width: calc(100% - 20px) !important;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        #results {
+            margin-top: 20px;
+        }
+        
+        .cottage-card {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .cottage-card h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .cottage-image {
+            max-width: 300px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 18px;
+            display: none;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏡 Cottage Booking Mediator Service</h1>
+        
+        <!-- Section 1: Service URL -->
+        <div class="section">
+            <h2>📍 1. Remote Service URL</h2>
+            <div class="input-group">
+                <label for="serviceURL">Service URL:</label>
+                <input type="text" id="serviceURL" class="service-url-input" 
+                       placeholder="http://localhost:8080/CottageService/searchCottageService"
+                       value="http://localhost:8080/CottageService/searchCottageService">
+            </div>
+        </div>
+        
+        <!-- Section 2: Search Criteria -->
+        <div class="section">
+            <h2>🔍 2. Search Criteria</h2>
+            <div class="input-group">
+                <label for="bookerName">Booker Name:</label>
+                <input type="text" id="bookerName" placeholder="John Doe">
+            </div>
+            <div class="input-group">
+                <label for="numberOfPeople">Number of People:</label>
+                <input type="number" id="numberOfPeople" min="1" placeholder="4">
+            </div>
+            <div class="input-group">
+                <label for="numberOfBedrooms">Number of Bedrooms:</label>
+                <input type="number" id="numberOfBedrooms" min="1" placeholder="2">
+            </div>
+            <div class="input-group">
+                <label for="maxDistanceFromLake">Max Distance from Lake (m):</label>
+                <input type="number" id="maxDistanceFromLake" placeholder="500">
+            </div>
+            <div class="input-group">
+                <label for="cityName">City Name:</label>
+                <input type="text" id="cityName" placeholder="Jyväskylä">
+            </div>
+            <div class="input-group">
+                <label for="maxCityDistance">Max Distance to City (km):</label>
+                <input type="number" id="maxCityDistance" placeholder="20">
+            </div>
+            <div class="input-group">
+                <label for="numberOfDays">Number of Days:</label>
+                <input type="number" id="numberOfDays" min="1" placeholder="7">
+            </div>
+            <div class="input-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="input-group">
+                <label for="possibleShift">Possible Shift (days):</label>
+                <input type="number" id="possibleShift" min="0" placeholder="3">
+            </div>
+            
+            <button onclick="searchCottages()">🔍 Search Cottages</button>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">
+            <p>⏳ Searching for cottages...</p>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="error" id="error"></div>
+        
+        <!-- Section 3: Results -->
+        <div class="section" id="resultsSection" style="display:none;">
+            <h2>🏠 3. Search Results</h2>
+            <div id="results"></div>
+        </div>
+    </div>
+    
+    <script src="mediatorClient.js"></script>
+</body>
+</html>
