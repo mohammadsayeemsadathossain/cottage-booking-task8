@@ -34,28 +34,23 @@ function searchCottages() {
         alert('⚠️ Please fill in all required fields before searching!');
         return;
     }
-    
-    // Show loading indicator
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('error').style.display = 'none';
-    document.getElementById('resultsSection').style.display = 'none';
-    
-    // Prepare data to send to mediator server
-    const requestData = {
-        reqType: 'searchCottage',
-        serviceURL: serviceURL,
-        bookerName: bookerName,
-        numberOfPeople: numberOfPeople,
-        numberOfBedrooms: numberOfBedrooms,
-        maxDistanceFromLake: maxDistanceFromLake,
-        cityName: cityName,
-        maxCityDistance: maxCityDistance,
-        numberOfDays: numberOfDays,
-        startDate: startDate,
-        possibleShift: possibleShift
-    };
-    alert(cityName);
-    // Convert data to URL-encoded format
+
+    // Show results section and loading message
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('cottageList').innerHTML = `
+        <div class="loading-message">
+            <div class="loading-spinner"></div>
+            <p>Searching for available cottages via SSWAP service...</p>
+        </div>
+    `;
+
+    // Disable the search button while loading
+    const searchBtn = document.querySelector('.submit-btn');
+    searchBtn.disabled = true;
+    searchBtn.querySelector('.btn-text').style.display = 'none';
+    searchBtn.querySelector('.btn-loader').style.display = 'inline-block';
+
+    // Prepare data to send to mediator servlet
     const formData = new URLSearchParams();
     formData.append('reqType', 'searchCottage');
     formData.append('serviceURL', serviceURL);
