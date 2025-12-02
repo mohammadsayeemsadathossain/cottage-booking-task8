@@ -69,6 +69,19 @@ public class SswapService {
         String startDate = getFirstValue(rrgModel, vf, searchReqResource, "startDate"); 
         String requiredDays = getFirstValue(rrgModel, vf, searchReqResource, "numberOfDays");
         String maxStartShiftDays = getFirstValue(rrgModel, vf, searchReqResource, "possibleShift");
+        
+        System.out.println("--- Show all input params ---");
+        System.out.println("bookerName: " + bookerName);
+        System.out.println("requiredPlaces: " + requiredPlaces);
+        System.out.println("requiredBedrooms: " + requiredBedrooms);
+        System.out.println("boomaxLakeDistanceMeterskerName: " + maxLakeDistanceMeters);
+        System.out.println("city: " + city);
+        System.out.println("maxCityDistanceMeters: " + maxCityDistanceMeters);
+        System.out.println("startDate: " + startDate);
+        System.out.println("requiredDays: " + requiredDays);
+        System.out.println("maxStartShiftDays: " + maxStartShiftDays);
+        
+        
 
         // 3. Execute the business logic
         DateTimeFormatter IN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -117,7 +130,7 @@ public class SswapService {
         output.append("            cf:nearestCity \"").append(maxCityDistanceMeters).append("\" ;\n");
         output.append("            cf:numberOfDays \"").append(requiredDays).append("\" ;\n");
         output.append("            cf:startDate \"").append(startDate).append("\" ;\n");
-        output.append("            cf:possibleShift \"").append(maxStartShiftDays).append("\"");
+        output.append("            cf:possibleShift \"").append(maxStartShiftDays).append("\";\n");
 
         // Iterate through results and append sswap:mapsTo block
         for (int i = 0; i < suggestions.size(); i++) {
@@ -126,7 +139,7 @@ public class SswapService {
             // Add semicolon or period based on position
             String delimiter = (i == suggestions.size() - 1) ? "." : ","; 
 
-            output.append(" ;\n            sswap:mapsTo [\n"); // Start mapsTo block
+            output.append(" \n            sswap:mapsTo [\n"); // Start mapsTo block
             output.append("                rdf:type sswap:Object, cf:SearchResp ;\n");
             
             // Output Fields (Untyped Literals)
@@ -148,7 +161,7 @@ public class SswapService {
             output.append("                cf:bookingStartDate \"").append(sug.getStartDate()).append("\"^^xsd:date ;\n");
             output.append("                cf:bookingEndDate \"").append(sug.getEndDate()).append("\"^^xsd:date\n");
             
-            output.append("            ]").append(delimiter).append("\n"); // Close mapsTo bracket and add delimiter
+            output.append("            ]").append(";").append("\n"); // Close mapsTo bracket and add delimiter
         }
         
         output.append("        ]\n"); // Close sswap:hasMapping bracket

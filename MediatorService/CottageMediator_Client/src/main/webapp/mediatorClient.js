@@ -46,7 +46,7 @@ function searchCottages() {
         startDate: startDate,
         possibleShift: possibleShift
     };
-    
+    alert(cityName);
     // Convert data to URL-encoded format
     const formData = new URLSearchParams();
     for (const key in requestData) {

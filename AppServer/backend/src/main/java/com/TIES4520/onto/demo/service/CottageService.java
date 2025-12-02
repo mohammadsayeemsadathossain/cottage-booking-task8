@@ -3,6 +3,7 @@ package com.TIES4520.onto.demo.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -149,9 +150,9 @@ public class CottageService {
 	        java.time.LocalDate e = s.plusDays(requiredDays);
 	        String sStr = s.toString(); // yyyy-MM-dd
 	        String eStr = e.toString();
-
+	        
 	        String cityFilter = (city != null && !city.isBlank())
-	                ? "FILTER (lcase(str(?cityName)) = \"" + esc(city.toLowerCase()) + "\")\n" : "";
+	                ? "FILTER (lcase(str(?cityName)) = \"" + esc(city.toLowerCase(new Locale("fi", "FI"))) + "\")\n" : "";
 
 	        // Similar to searchAvailable() but returns the columns we need and filters out overlaps
 	        String sparql = pfx() + 
