@@ -27,7 +27,7 @@
                        name="serviceURL" 
                        placeholder="http://localhost:8080/CottageService/searchCottageService"
                        value="http://localhost:8080/CottageService/searchCottageService">
-                <p class="help-text">📍 Enter the URL of the remote SSWAP Cottage Booking Service</p>
+                <p class="help-text">🔍 Enter the URL of the remote SSWAP Cottage Booking Service</p>
             </div>
         </div>
 
@@ -94,6 +94,31 @@
             <button type="button" class="submit-btn" onclick="searchCottages()">
                 <span class="btn-text">Search Available Cottages</span>
                 <span class="btn-loader" style="display: none;">Searching...</span>
+            </button>
+        </div>
+
+        <!-- MAPPING INTERFACE SECTION (New for Task 8) -->
+        <div id="mappingSection" class="mapping-section" style="display: none;">
+            <h2>🔗 Ontology Mapping Required</h2>
+            <p class="mapping-description">
+                The remote service uses different field names. Please map our fields to their fields below:
+            </p>
+            
+            <div class="mapping-notice">
+                <strong>ℹ️ How to map:</strong> For each of OUR fields on the left, select the matching field from THEIR service in the dropdown on the right.
+            </div>
+
+            <div id="mappingFields" class="mapping-fields">
+                <!-- Mapping fields will be dynamically generated here by JavaScript -->
+            </div>
+
+            <button type="button" class="submit-btn mapping-confirm-btn" onclick="confirmMapping()">
+                <span class="btn-text">✓ Confirm Mapping & Search</span>
+                <span class="btn-loader" style="display: none;">Processing...</span>
+            </button>
+
+            <button type="button" class="cancel-btn" onclick="cancelMapping()">
+                ✕ Cancel
             </button>
         </div>
 
