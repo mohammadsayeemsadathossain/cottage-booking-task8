@@ -1,0 +1,41 @@
+	@prefix : <http://localhost:8080/cottageBooking/onto/cottageOntology.owl#> .
+	@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+	@prefix resource: <http://localhost:8080/cottageBooking/resources/> .
+	@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+	@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+	resource:searchCottageService
+		rdf:type sswap:Resource , :CottageSearchService ;
+		sswap:providedBy resource:resourceProvider ;
+		sswap:name "Search Cottage Service" ;
+		sswap:oneLineDescription 
+			"A semantic service that searchs available cottages." ;
+		sswap:operatesOn [
+		  rdf:type sswap:Graph ;
+		  sswap:hasMapping [
+			rdf:type sswap:Subject , :CottageSearchRequest ;
+			:bookerName "Alice" ;
+			:hasCapacity "4"^^xsd:integer ;
+			:hasBedrooms "2"^^xsd:integer ;
+			:hasDistanceToLake "300.0"^^xsd:float ;
+			:hasNearestCity "Sigulda" ;
+			:hasDistanceToCity "1500.0"^^xsd:float ;
+			:hasStartDate "2025-07-10"^^xsd:date ;
+			:requiredDays "5"^^xsd:integer ;
+			:maxStartShift "2"^^xsd:integer ;
+			sswap:mapsTo [
+			  rdf:type sswap:Object , :CottageSearchResponse ;
+			  :bookerName "" ;
+			  :bookingNumber "" ;
+			  :hasAddress "" ;
+			  :hasImage "" ;
+			  :hasCapacity ""^^xsd:integer ;
+			  :hasBedrooms ""^^xsd:integer ;
+			  :hasDistanceToLake ""^^xsd:float ;
+			  :hasNearestCity "" ;
+			  :hasDistanceToCity ""^^xsd:float ;
+			  :hasStartDate ""^^xsd:date ;
+			  :hasEndDate ""^^xsd:date ;
+			]
+		  ]
+		] .

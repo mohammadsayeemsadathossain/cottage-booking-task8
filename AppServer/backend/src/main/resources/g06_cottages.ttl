@@ -1,0 +1,169 @@
+@prefix : <http://localhost:8080/ontology/cottage#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<http://127.0.0.1:8080/static/cottages.ttl>
+  a owl:Ontology ;
+  owl:imports <http://127.0.0.1:8080/ontology/cottage.owl> .
+
+### Cities
+:Jyväskylä a :City .
+:Muurame a :City .
+:Lahti a :City .
+:Tampere a :City .
+:Rovaniemi a :City .
+
+### Cottages
+:Cottage1 a :Cottage ;
+    :address "Järvitie 12, Jyväskylä" ;
+    :capacity 6 ;
+    :bedrooms 3 ;
+    :distanceToLake 80 ;
+    :nearestCity :Jyväskylä ;
+    :distanceToCity 12000 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage1.jpg" .
+
+:Cottage2 a :Cottage ;
+    :address "Metsäpolku 5, Muurame" ;
+    :capacity 4 ;
+    :bedrooms 2 ;
+    :distanceToLake 30 ;
+    :nearestCity :Muurame ;
+    :distanceToCity 2000 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage1.jpg" .
+
+:Cottage3 a :Cottage ;
+    :address "88 Summit Lane" ;
+    :capacity 8 ;
+    :bedrooms 4 ;
+    :distanceToLake 1500 ;
+    :nearestCity :Lahti ;
+    :distanceToCity 6000 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage2.jpg" .
+
+:Cottage4 a :Cottage ;
+    :address "5 Sunflower Road" ;
+    :capacity 3 ;
+    :bedrooms 1 ;
+    :distanceToLake 250 ;
+    :nearestCity :Tampere ;
+    :distanceToCity 4000 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage3.jpg" .
+
+
+    :Cottage7 a :Cottage ;
+    :address "22 Birch Grove, Tampere" ;
+    :capacity 2 ;
+    :bedrooms 1 ;
+    :distanceToLake 200 ;
+    :nearestCity :Tampere ;
+    :distanceToCity 3500 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage4.jpeg" .
+
+:Cottage8 a :Cottage ;
+    :address "9 Pine Street, Tampere" ;
+    :capacity 3 ;
+    :bedrooms 1 ;
+    :distanceToLake 150 ;
+    :nearestCity :Tampere ;
+    :distanceToCity 5000 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage7.jpg" .
+
+:Cottage9 a :Cottage ;
+    :address "3 Lakeview Path, Tampere" ;
+    :capacity 2 ;
+    :bedrooms 1 ;
+    :distanceToLake 80 ;
+    :nearestCity :Tampere ;
+    :distanceToCity 4200 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage.jpg" .
+
+
+:Cottage5 a :Cottage ;
+    :address "19 River Bend" ;
+    :capacity 5 ;
+    :bedrooms 2 ;
+    :distanceToLake 0 ;
+    :nearestCity :Jyväskylä ;
+    :distanceToCity 7000 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage7.jpg" .
+
+:Cottage6 a :Cottage ;
+    :address "7 Aurora Street" ;
+    :capacity 2 ;
+    :bedrooms 1 ;
+    :distanceToLake 100 ;
+    :nearestCity :Rovaniemi ;
+    :distanceToCity 2000 ;
+    :imageUrl "http://127.0.0.1:8000/images/Cottage5.jpg" .
+
+### Example Bookings
+:Booking1 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-05"^^xsd:date ;
+        :end   "2025-11-07"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage1 .
+
+:Booking2 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-10"^^xsd:date ;
+        :end   "2025-11-12"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage1 .
+
+:Booking3 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-03"^^xsd:date ;
+        :end   "2025-11-06"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage2 .
+
+:Booking4 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-08"^^xsd:date ;
+        :end   "2025-11-09"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage3 .
+
+:Booking5 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-07"^^xsd:date ;
+        :end   "2025-11-10"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage4 .
+
+:Booking6 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-01"^^xsd:date ;
+        :end   "2025-11-04"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage5 .
+
+
+    :Booking7 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-15"^^xsd:date ;
+        :end   "2025-11-18"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage7 .
+
+:Booking8 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-05"^^xsd:date ;
+        :end   "2025-11-08"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage8 .
+
+:Booking9 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-20"^^xsd:date ;
+        :end   "2025-11-22"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage9 .
+:Booking10 a :Booking ;
+    :bookingPeriod [
+        :start "2025-11-06"^^xsd:date ;
+        :end   "2025-11-08"^^xsd:date
+    ] ;
+    :cottageBooking :Cottage6 .

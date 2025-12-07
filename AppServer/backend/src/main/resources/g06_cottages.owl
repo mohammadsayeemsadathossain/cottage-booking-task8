@@ -1,0 +1,199 @@
+@prefix : <http://127.0.0.1:8000/ontology/cottage#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+# Ontology declaration
+<http://127.0.0.1:8000/ontology/cottage.owl> a owl:Ontology ;
+    rdfs:label "Cottage Booking Ontology" ;
+    rdfs:comment "Ontology describing cottages, cities, bookings, booking periods, and SSWAP booking service." .
+
+####################
+### Core Classes ###
+####################
+
+:Cottage a owl:Class ;
+    rdfs:label "Cottage" .
+
+:City a owl:Class ;
+    rdfs:label "City" .
+
+:BookingPeriod a owl:Class ;
+    rdfs:label "BookingPeriod" ;
+    rdfs:comment "A time range [startDate, endDate] representing a booking." .
+
+:Booking a owl:Class ;
+    rdfs:label "Booking" ;
+    rdfs:comment "Represents a booking for a cottage during a booking period." .
+
+########################
+### SSWAP Classes ###
+########################
+
+:CottageBookingService a owl:Class ;
+    rdfs:label "Cottage Booking Service" .
+
+:BookingRequest a owl:Class ;
+    rdfs:label "Booking Request" ;
+    rdfs:comment "Contains information about user booking requirements." .
+
+:BookingSuggestion a owl:Class ;
+    rdfs:label "Booking Suggestion" ;
+    rdfs:comment "Represents a suggested cottage booking." .
+
+########################
+### Object Properties ###
+########################
+
+:nearestCity a owl:ObjectProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range :City ;
+    rdfs:label "nearestCity" .
+
+:cottageBooking a owl:ObjectProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range :Booking ;
+    rdfs:label "cottageBooking" ;
+    rdfs:comment "Links a cottage to its bookings." .
+
+:bookingPeriod a owl:ObjectProperty ;
+    rdfs:domain :Booking ;
+    rdfs:range :BookingPeriod ;
+    rdfs:label "bookingPeriod" ;
+    rdfs:comment "Links a booking to the period it covers." .
+
+########################
+### Data Properties ###
+########################
+
+# For Cottage
+:address a owl:DatatypeProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range xsd:string ;
+    rdfs:label "address" .
+
+:imageUrl a owl:DatatypeProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range xsd:anyURI ;
+    rdfs:label "imageUrl" .
+
+:capacity a owl:DatatypeProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range xsd:integer ;
+    rdfs:label "capacity" .
+
+:bedrooms a owl:DatatypeProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range xsd:integer ;
+    rdfs:label "bedrooms" .
+
+:distanceToLake a owl:DatatypeProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range xsd:integer ;
+    rdfs:label "distanceToLake" .
+
+:distanceToCity a owl:DatatypeProperty ;
+    rdfs:domain :Cottage ;
+    rdfs:range xsd:integer ;
+    rdfs:label "distanceToCity" .
+
+# For BookingPeriod
+:start a owl:DatatypeProperty ;
+    rdfs:domain :BookingPeriod ;
+    rdfs:range xsd:date ;
+    rdfs:label "start" .
+
+:end a owl:DatatypeProperty ;
+    rdfs:domain :BookingPeriod ;
+    rdfs:range xsd:date ;
+    rdfs:label "end" .
+
+########################
+### BookingRequest Properties ###
+########################
+
+:bookerName a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:string .
+
+:requiredPlaces a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:integer .
+
+:requiredBedrooms a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:integer .
+
+:maxDistanceLake a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:integer .
+
+:city a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:string .
+
+:maxDistanceCity a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:integer .
+
+:requiredDays a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:integer .
+
+:startDate a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:date .
+
+:maxShiftDays a owl:DatatypeProperty ;
+    rdfs:domain :BookingRequest ;
+    rdfs:range xsd:integer .
+
+########################
+### BookingSuggestion Properties ###
+########################
+
+:bookerName a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:string ;
+    rdfs:label "bookerName" .
+    
+:bookingNumber a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:string .
+
+:suggestedAddress a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:string .
+
+:suggestedImageUrl a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:anyURI .
+
+:suggestedCapacity a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:integer .
+
+:suggestedBedrooms a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:integer .
+
+:suggestedDistanceToLake a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:integer .
+
+:suggestedNearestCity a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:string .
+
+:suggestedDistanceToCity a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:integer .
+
+:suggestedStart a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:date .
+
+:suggestedEnd a owl:DatatypeProperty ;
+    rdfs:domain :BookingSuggestion ;
+    rdfs:range xsd:date .

@@ -1,0 +1,47 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix cottage: <http://127.0.0.1:8000/ontology/cottage.owl#> .
+@prefix resource: <http://127.0.0.1:8000/resource/> .
+
+# --- Cottage Booking Service RIG / RDG ---
+resource:CottageBookingService
+    rdf:type sswap:Resource ,
+             cottage:CottageBookingService ;
+    sswap:providedBy resource:CottageBookingProvider ;
+    sswap:name "Cottage Booking SSWAP Service" ;
+    sswap:oneLineDescription "A service that accepts a booking request and returns available cottages." ;
+    sswap:operatesOn [
+        rdf:type sswap:Graph ;
+        sswap:hasMapping [
+            rdf:type sswap:Subject ;
+            rdf:type cottage:BookingRequest ;
+            # Input fields (example values)
+            cottage:bookerName "Asma" ;
+            cottage:requiredPlaces "3"^^xsd:integer ;
+            cottage:requiredBedrooms "1"^^xsd:integer ;
+            cottage:maxDistanceLake "300"^^xsd:integer ;
+            cottage:city "Tampere" ;
+            cottage:maxDistanceCity "5000"^^xsd:integer ;
+            cottage:requiredDays "2"^^xsd:integer ;
+            cottage:startDate "2025-11-05"^^xsd:date ;
+            cottage:maxShiftDays "2"^^xsd:integer ;
+            # Output fields mapping 
+            sswap:mapsTo [
+                rdf:type sswap:Object ;
+                rdf:type cottage:BookingSuggestion ;
+                cottage:bookerName "" ;
+                cottage:bookingNumber "" ;
+                cottage:address "" ;
+                cottage:imageUrl "" ;
+                cottage:capacity "" ;
+                cottage:bedrooms "" ;
+                cottage:distanceToLake "" ;
+                cottage:nearestCity "" ;
+                cottage:distanceToCity "" ;
+                cottage:start "" ;
+                cottage:end ""
+            ]
+        ]
+    ] .

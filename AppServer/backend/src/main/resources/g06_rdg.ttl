@@ -1,0 +1,44 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix cottage: <http://127.0.0.1:8000/ontology/cottage.owl#> .
+@prefix resource: <http://127.0.0.1:8000/resource/> .
+
+# --- Cottage Booking Service RDG ---
+resource:CottageBookingService
+    rdf:type sswap:Resource ,
+             cottage:CottageBookingService ;
+    sswap:providedBy resource:CottageBookingProvider ;
+    sswap:name "Cottage Booking SSWAP Service" ;
+    sswap:oneLineDescription "A service that accepts a booking request and returns available cottages." ;
+    sswap:operatesOn [
+        rdf:type sswap:Graph ;
+        sswap:hasMapping [
+            rdf:type sswap:Subject , cottage:BookingRequest ;
+            # Input fields
+            cottage:bookerName "" ;
+            cottage:requiredPlaces "" ;
+            cottage:requiredBedrooms "" ;
+            cottage:maxDistanceLake "" ;
+            cottage:city "" ;
+            cottage:maxDistanceCity "" ;
+            cottage:requiredDays "" ;
+            cottage:startDate "" ;
+            cottage:maxShiftDays "" ;
+            # Output fields mapping
+            sswap:mapsTo [
+                rdf:type sswap:Object , cottage:BookingSuggestion ;
+                cottage:bookerName "" ;
+                cottage:bookingNumber "" ;
+                cottage:address "" ;
+                cottage:imageUrl "" ;
+                cottage:capacity "" ;
+                cottage:bedrooms "" ;
+                cottage:distanceToLake "" ;
+                cottage:nearestCity "" ;
+                cottage:distanceToCity "" ;
+                cottage:start "" ;
+                cottage:end ""
+            ]
+        ]
+    ] .

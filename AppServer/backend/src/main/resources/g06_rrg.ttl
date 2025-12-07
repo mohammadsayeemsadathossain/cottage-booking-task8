@@ -1,0 +1,64 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix sswap: <http://sswapmeet.sswap.info/sswap/> .
+@prefix cottage: <http://127.0.0.1:8000/ontology/cottage.owl#> .
+@prefix resource: <http://127.0.0.1:8000/resource/> .
+
+# --- Cottage Booking Service RRG ---
+resource:CottageBookingService
+    rdf:type sswap:Resource ,
+             cottage:CottageBookingService ;
+    sswap:providedBy resource:CottageBookingProvider ;
+    sswap:name "Cottage Booking SSWAP Service" ;
+    sswap:oneLineDescription "A service that accepts a booking request and returns available cottages." ;
+    sswap:operatesOn [
+        rdf:type sswap:Graph ;
+        sswap:hasMapping [
+            rdf:type sswap:Subject ;
+            rdf:type cottage:BookingRequest ;
+            # Input fields (example values)
+            cottage:bookerName "Asma" ;
+            cottage:requiredPlaces "3"^^xsd:integer ;
+            cottage:requiredBedrooms "1"^^xsd:integer ;
+            cottage:maxDistanceLake "300"^^xsd:integer ;
+            cottage:city "Tampere" ;
+            cottage:maxDistanceCity "5000"^^xsd:integer ;
+            cottage:requiredDays "2"^^xsd:integer ;
+            cottage:startDate "2025-11-05"^^xsd:date ;
+            cottage:maxShiftDays "2"^^xsd:integer ;
+            # Output fields mapping (two suggestions)
+            sswap:mapsTo [
+                rdf:type sswap:Object ;
+                rdf:type cottage:BookingSuggestion ;
+                # Suggestion 1
+                cottage:bookerName "Asma" ;
+                cottage:bookingNumber "UUID1234" ;
+                cottage:address "5 Sunflower Road" ;
+                cottage:imageUrl "http://127.0.0.1:8000/images/Cottage3.jpg" ;
+                cottage:capacity "3"^^xsd:integer ;
+                cottage:bedrooms "1"^^xsd:integer ;
+                cottage:distanceToLake "250"^^xsd:integer ;
+                cottage:nearestCity "Tampere" ;
+                cottage:distanceToCity "4000"^^xsd:integer ;
+                cottage:start "2025-11-06"^^xsd:date ;
+                cottage:end "2025-11-08"^^xsd:date
+            ],
+            [
+                rdf:type sswap:Object ;
+                rdf:type cottage:BookingSuggestion ;
+                # Suggestion 2
+                cottage:bookerName "Asma" ;
+                cottage:bookingNumber "UUID5678" ;
+                cottage:address "7 Maple Street" ;
+                cottage:imageUrl "http://127.0.0.1:8000/images/Cottage4.jpg" ;
+                cottage:capacity "4"^^xsd:integer ;
+                cottage:bedrooms "2"^^xsd:integer ;
+                cottage:distanceToLake "180"^^xsd:integer ;
+                cottage:nearestCity "Tampere" ;
+                cottage:distanceToCity "3500"^^xsd:integer ;
+                cottage:start "2025-11-07"^^xsd:date ;
+                cottage:end "2025-11-09"^^xsd:date
+            ]
+        ]
+    ] .

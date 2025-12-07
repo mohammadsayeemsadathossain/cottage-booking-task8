@@ -140,8 +140,6 @@ public class SswapService {
             BookingSuggestion sug = suggestions.get(i);
             
             // Add semicolon or period based on position
-            String delimiter = (i == suggestions.size() - 1) ? "." : ","; 
-
             output.append(" \n            sswap:mapsTo [\n"); // Start mapsTo block
             output.append("                rdf:type sswap:Object, cf:SearchResp ;\n");
             
