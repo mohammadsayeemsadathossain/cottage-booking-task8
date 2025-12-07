@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cottage Booking Mediator Service</title>
+    <title>Cottage Booking Mediator Service - Task 8</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -17,7 +17,7 @@
             <p>Find your perfect lakeside cottage getaway in Finland</p>
         </header>
 
-        <!-- SERVICE URL SECTION (New for Task 7) -->
+        <!-- SERVICE URL SECTION (Task 7) -->
         <div class="service-url-section">
             <h2>🔗 Remote Service Configuration</h2>
             <div class="form-group">
@@ -97,29 +97,53 @@
             </button>
         </div>
 
-        <!-- MAPPING INTERFACE SECTION (New for Task 8) -->
+        <!-- MAPPING INTERFACE SECTION (Task 8 - UPDATED: Input + Output Mapping) -->
         <div id="mappingSection" class="mapping-section" style="display: none;">
             <h2>🔗 Ontology Mapping Required</h2>
             <p class="mapping-description">
-                The remote service uses different field names. Please map our fields to their fields below:
+                The remote service uses different field names. Please map our fields to their fields below.
+                <br>
+                <strong>Green (🟢)</strong> = High confidence match (≥80%) • 
+                <strong>Yellow (🟡)</strong> = Medium confidence (70-79%) • 
+                <strong>Red (🔴)</strong> = Low confidence (&lt;70%) - review needed
             </p>
             
             <div class="mapping-notice">
-                <strong>ℹ️ How to map:</strong> For each of OUR fields on the left, select the matching field from THEIR service in the dropdown on the right.
+                <strong>ℹ️ How to map:</strong> Fields with high similarity are auto-selected. 
+                You can review and change any selection. All fields must be mapped before continuing.
             </div>
 
-            <div id="mappingFields" class="mapping-fields">
-                <!-- Mapping fields will be dynamically generated here by JavaScript -->
+            <!-- Two-column layout for Input and Output mappings -->
+            <div class="mapping-container">
+                <!-- LEFT COLUMN: Input Mapping (hasMapping - 9 fields) -->
+                <div class="mapping-column">
+                    <h3 class="mapping-column-title">📥 Input Mapping (9 Fields)</h3>
+                    <p class="mapping-column-subtitle">Map YOUR input fields to THEIR input fields (RIG/Subject)</p>
+                    <div id="inputMappingFields" class="mapping-fields">
+                        <!-- Input mapping fields will be dynamically generated here -->
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Output Mapping (mapsTo - 11 fields) -->
+                <div class="mapping-column">
+                    <h3 class="mapping-column-title">📤 Output Mapping (11 Fields)</h3>
+                    <p class="mapping-column-subtitle">Map YOUR output fields to THEIR output fields (RRG/Object)</p>
+                    <div id="outputMappingFields" class="mapping-fields">
+                        <!-- Output mapping fields will be dynamically generated here -->
+                    </div>
+                </div>
             </div>
 
-            <button type="button" class="submit-btn mapping-confirm-btn" onclick="confirmMapping()">
-                <span class="btn-text">✓ Confirm Mapping & Search</span>
-                <span class="btn-loader" style="display: none;">Processing...</span>
-            </button>
+            <div class="mapping-actions">
+                <button type="button" class="submit-btn mapping-confirm-btn" onclick="confirmMapping()">
+                    <span class="btn-text">✓ Confirm Mapping & Search</span>
+                    <span class="btn-loader" style="display: none;">Processing...</span>
+                </button>
 
-            <button type="button" class="cancel-btn" onclick="cancelMapping()">
-                ✕ Cancel
-            </button>
+                <button type="button" class="cancel-btn" onclick="cancelMapping()">
+                    ✕ Cancel
+                </button>
+            </div>
         </div>
 
         <!-- RESULTS SECTION -->
