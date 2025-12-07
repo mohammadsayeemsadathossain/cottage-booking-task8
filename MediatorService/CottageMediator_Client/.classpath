@@ -81,5 +81,15 @@
 			<attribute name="owner.project.facets" value="jst.web"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/ASUS/.m2/repository/org/apache/commons/commons-text/1.10.0/commons-text-1.10.0.jar" sourcepath="C:/Users/ASUS/.m2/repository/org/apache/commons/commons-text/1.10.0/commons-text-1.10.0-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.archivename" value="commons-text-1.10.0.jar"/>
+			<attribute name="maven.groupId" value="org.apache.commons"/>
+			<attribute name="maven.artifactId" value="commons-text"/>
+			<attribute name="maven.version" value="1.10.0"/>
+			<attribute name="maven.scope" value="compile"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
