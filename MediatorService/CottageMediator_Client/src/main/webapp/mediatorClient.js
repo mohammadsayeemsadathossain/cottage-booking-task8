@@ -1,19 +1,19 @@
 /**
  * Cottage Booking Mediator Client JavaScript
  * Task 7-2: Mediator Service Client
- * Task 8: Added Ontology Alignment Support
- * Handles communication between user interface and SSWAP Mediator Servlet
+ * Task 8: UPDATED - Complete Input & Output Ontology Alignment
+ * - Maps 9 INPUTS (hasMapping - Subject/RIG)
+ * - Maps 11 OUTPUTS (mapsTo - Object/RRG)
+ * - Auto-selects based on similarity scores from Apache Commons Text
+ * - Visual similarity indicators
  */
 
 /**
  * Main function called when user clicks "Search Available Cottages"
- * Collects form data and sends request to mediator servlet
  */
 function searchCottages() {
-    // Get service URL
     const serviceURL = document.getElementById('serviceURL').value.trim();
     
-    // Get all search input values from the form
     const bookerName = document.getElementById('bookerName').value.trim();
     const numPeople = document.getElementById('numPeople').value;
     const numBedrooms = document.getElementById('numBedrooms').value;
@@ -24,7 +24,6 @@ function searchCottages() {
     const startDate = document.getElementById('startDate').value;
     const dateShift = document.getElementById('dateShift').value;
 
-    // Validate required fields (city is optional)
     if (!serviceURL) {
         alert('⚠️ Please enter the SSWAP Service URL!');
         return;
@@ -36,7 +35,6 @@ function searchCottages() {
         return;
     }
 
-    // Show results section and loading message
     document.getElementById('results').style.display = 'block';
     document.getElementById('cottageList').innerHTML = `
         <div class="loading-message">
@@ -45,13 +43,11 @@ function searchCottages() {
         </div>
     `;
 
-    // Disable the search button while loading
     const searchBtn = document.querySelector('.submit-btn');
     searchBtn.disabled = true;
     searchBtn.querySelector('.btn-text').style.display = 'none';
     searchBtn.querySelector('.btn-loader').style.display = 'inline-block';
 
-    // Prepare data to send to mediator servlet
     const formData = new URLSearchParams();
     formData.append('reqType', 'searchCottage');
     formData.append('serviceURL', serviceURL);
@@ -65,7 +61,6 @@ function searchCottages() {
     formData.append('startDate', startDate);
     formData.append('possibleShift', dateShift);
 
-    // Send request to mediator servlet
     fetch('MediatorServlet', {
         method: 'POST',
         headers: {
@@ -80,12 +75,9 @@ function searchCottages() {
         return response.json();
     })
     .then(data => {
-        // Check if mapping is required (Task 8 - Ontology Alignment)
         if (data.requiresMapping === true) {
-            // Show mapping interface
             showMappingInterface(data);
         } else {
-            // Display the results normally
             displayResults(data, bookerName);
         }
     })
@@ -107,45 +99,34 @@ function searchCottages() {
         `;
     })
     .finally(() => {
-        // Re-enable the search button
         searchBtn.disabled = false;
         searchBtn.querySelector('.btn-text').style.display = 'inline-block';
         searchBtn.querySelector('.btn-loader').style.display = 'none';
     });
 }
 
-/**
- * Convert date from YYYY-MM-DD to a readable format
- */
 function formatDateForDisplay(dateString) {
     if (!dateString) return 'N/A';
     
-    // Handle both YYYY-MM-DD and DD.MM.YYYY formats
     let date;
     if (dateString.includes('-')) {
-        // YYYY-MM-DD format
         date = new Date(dateString);
     } else if (dateString.includes('.')) {
-        // DD.MM.YYYY format
         const [day, month, year] = dateString.split('.');
         date = new Date(year, month - 1, day);
     } else {
-        return dateString; // Return as-is if format not recognized
+        return dateString;
     }
     
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
 }
 
-/**
- * Calculate duration between two dates
- */
 function calculateDuration(startDate, endDate) {
     if (!startDate || !endDate) return 'N/A';
     
     let start, end;
     
-    // Handle YYYY-MM-DD format
     if (startDate.includes('-')) {
         start = new Date(startDate);
     } else if (startDate.includes('.')) {
@@ -153,7 +134,6 @@ function calculateDuration(startDate, endDate) {
         start = new Date(year, month - 1, day);
     }
     
-    // Handle YYYY-MM-DD format
     if (endDate.includes('-')) {
         end = new Date(endDate);
     } else if (endDate.includes('.')) {
@@ -166,13 +146,9 @@ function calculateDuration(startDate, endDate) {
     return diffDays;
 }
 
-/**
- * Display the cottage search results
- */
 function displayResults(data, bookerName) {
     const cottageList = document.getElementById('cottageList');
     
-    // Check if response has error
     if (data.error) {
         cottageList.innerHTML = `
             <div class="error-message">
@@ -182,7 +158,6 @@ function displayResults(data, bookerName) {
         return;
     }
     
-    // Check if we have cottages
     const cottages = data.cottages || [];
     
     if (cottages.length === 0) {
@@ -201,17 +176,13 @@ function displayResults(data, bookerName) {
         return;
     }
 
-    // Generate HTML for each cottage
     let html = '';
     cottages.forEach((cottage, index) => {
-        // Use booking number from backend or generate one
         const bookingNumber = cottage.bookingNumber || 'BK-' + Date.now() + '-' + (index + 1);
         
-        // Format dates for display
         const startDateDisplay = formatDateForDisplay(cottage.bookingStartDate || cottage.startDate);
         const endDateDisplay = formatDateForDisplay(cottage.bookingEndDate || cottage.endDate);
         
-        // Calculate duration
         const duration = calculateDuration(
             cottage.bookingStartDate || cottage.startDate,
             cottage.bookingEndDate || cottage.endDate
@@ -295,17 +266,10 @@ function displayResults(data, bookerName) {
     });
     
     cottageList.innerHTML = html;
-    
-    // Smooth scroll to results
     document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/**
- * Book a cottage - Shows "Coming Soon" message
- * This is a placeholder for Task 7 since booking functionality is not implemented yet
- */
 function bookCottage(bookingNumber, cottageName) {
-    // Show coming soon alert
     alert(`📅 Booking Feature Coming Soon!\n\n` +
           `Cottage: ${cottageName}\n` +
           `Booking Number: ${bookingNumber}\n\n` +
@@ -313,15 +277,11 @@ function bookCottage(bookingNumber, cottageName) {
           `For now, please note this cottage's details and contact us directly to complete your booking.`);
 }
 
-/**
- * Set minimum date to today for the date input on page load
- */
 window.addEventListener('DOMContentLoaded', () => {
     const startDateInput = document.getElementById('startDate');
     const today = new Date().toISOString().split('T')[0];
     startDateInput.setAttribute('min', today);
     
-    // Set default date to 7 days from now
     const defaultDate = new Date();
     defaultDate.setDate(defaultDate.getDate() + 7);
     startDateInput.value = defaultDate.toISOString().split('T')[0];
@@ -330,17 +290,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /**
  * ===========================================================================
- * TASK 8: ONTOLOGY ALIGNMENT FUNCTIONS
- * These functions handle the ontology mapping interface for runtime alignment
+ * TASK 8: UPDATED ONTOLOGY ALIGNMENT FUNCTIONS
+ * - Maps both INPUTS (9 fields) and OUTPUTS (11 fields)
+ * - Auto-selects based on similarity scores from backend (Apache Commons Text)
+ * - Visual similarity indicators (Green/Yellow/Red badges)
  * ===========================================================================
  */
 
-// Variable to store the original search context during mapping
 let originalSearchContext = null;
 
-/**
- * Store the original search form data before showing mapping interface
- */
 function storeMappingContext() {
     originalSearchContext = {
         serviceURL: document.getElementById('serviceURL').value.trim(),
@@ -357,33 +315,63 @@ function storeMappingContext() {
 }
 
 /**
- * Show the mapping interface when ontology mismatch is detected
+ * UPDATED: Show mapping interface with BOTH input and output mappings
  * @param {Object} data - Response from backend with mapping information
+ * Expected format:
+ * {
+ *   requiresMapping: true,
+ *   inputMapping: { ourInputs: {...}, theirInputs: {field: score, ...} },
+ *   outputMapping: { ourOutputs: {...}, theirOutputs: {field: score, ...} }
+ * }
  */
 function showMappingInterface(data) {
-    // Store the original search context
     storeMappingContext();
     
-    // Hide results section if visible
     document.getElementById('results').style.display = 'none';
     
-    // Show mapping section
     const mappingSection = document.getElementById('mappingSection');
     mappingSection.style.display = 'block';
     
-    // Get the container for mapping fields
-    const mappingFieldsContainer = document.getElementById('mappingFields');
-    mappingFieldsContainer.innerHTML = ''; // Clear previous content
+    // Generate INPUT mappings (9 fields)
+    const inputMappingContainer = document.getElementById('inputMappingFields');
+    inputMappingContainer.innerHTML = '';
     
-    // Get our ontology fields and their ontology fields
-    const ourFields = data.ourOntology || {};
-    const theirFields = data.theirOntology || [];
+    if (data.inputMapping) {
+        const ourInputs = data.inputMapping.ourInputs || {};
+        const theirInputs = data.inputMapping.theirInputs || {};
+        
+        generateMappingRows(inputMappingContainer, ourInputs, theirInputs, 'input');
+    }
     
-    // Create mapping rows for each of our fields
+    // Generate OUTPUT mappings (11 fields)
+    const outputMappingContainer = document.getElementById('outputMappingFields');
+    outputMappingContainer.innerHTML = '';
+    
+    if (data.outputMapping) {
+        const ourOutputs = data.outputMapping.ourOutputs || {};
+        const theirOutputs = data.outputMapping.theirOutputs || {};
+        
+        generateMappingRows(outputMappingContainer, ourOutputs, theirOutputs, 'output');
+    }
+    
+    mappingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
+ * Generate mapping rows for either inputs or outputs
+ * @param {HTMLElement} container - Container to add rows to
+ * @param {Object} ourFields - Our field names and descriptions
+ * @param {Object} theirFields - Their field names with similarity scores
+ * @param {String} mappingType - 'input' or 'output'
+ */
+function generateMappingRows(container, ourFields, theirFields, mappingType) {
     Object.keys(ourFields).forEach(ourFieldName => {
         const fieldDescription = ourFields[ourFieldName];
         
-        // Create a mapping row
+        // Find best match based on similarity scores
+        const bestMatch = findBestMatchWithScore(ourFieldName, theirFields);
+        
+        // Create mapping row
         const mappingRow = document.createElement('div');
         mappingRow.className = 'mapping-row';
         
@@ -407,112 +395,155 @@ function showMappingInterface(data) {
         
         const selectElement = document.createElement('select');
         selectElement.className = 'mapping-select';
-        selectElement.id = `mapping_${ourFieldName}`;
+        selectElement.id = `mapping_${mappingType}_${ourFieldName}`;
         selectElement.name = ourFieldName;
+        selectElement.dataset.mappingType = mappingType;
         
         // Add default option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
-        defaultOption.textContent = '-- Select their field --';
+        
+        if (bestMatch.score < 0.70) {
+            defaultOption.textContent = '-- Select Field (Low Match) --';
+        } else {
+            defaultOption.textContent = '-- Select Field --';
+        }
         selectElement.appendChild(defaultOption);
         
-        // Add options for each of their fields
-        theirFields.forEach(theirFieldName => {
+        // Add options for each of their fields with scores
+        const sortedFields = Object.entries(theirFields).sort((a, b) => b[1] - a[1]);
+        
+        sortedFields.forEach(([theirFieldName, score]) => {
             const option = document.createElement('option');
             option.value = theirFieldName;
-            option.textContent = theirFieldName;
             
-            // Auto-select if names are similar (simple heuristic)
-            if (areSimilarFieldNames(ourFieldName, theirFieldName)) {
+            const percentage = Math.round(score * 100);
+            const badge = getSimilarityEmoji(score);
+            option.textContent = `${theirFieldName} ${badge} ${percentage}%`;
+            
+            // Auto-select if this is the best match and score >= 0.70
+            if (bestMatch.field === theirFieldName && bestMatch.score >= 0.70) {
                 option.selected = true;
             }
             
             selectElement.appendChild(option);
         });
         
+        // Add similarity badge display
+        const similarityBadge = document.createElement('div');
+        similarityBadge.className = 'similarity-indicator';
+        if (bestMatch.score >= 0.70) {
+            const percentage = Math.round(bestMatch.score * 100);
+            const badgeClass = getSimilarityClass(bestMatch.score);
+            similarityBadge.innerHTML = `
+                <span class="similarity-badge ${badgeClass}">
+                    ${getSimilarityEmoji(bestMatch.score)} ${percentage}% match
+                </span>
+            `;
+        } else {
+            similarityBadge.innerHTML = `
+                <span class="similarity-badge low">
+                    🔴 Low similarity - manual selection needed
+                </span>
+            `;
+        }
+        
         theirFieldDiv.appendChild(selectElement);
+        theirFieldDiv.appendChild(similarityBadge);
         
         // Add all parts to the row
         mappingRow.appendChild(ourFieldDiv);
         mappingRow.appendChild(arrowDiv);
         mappingRow.appendChild(theirFieldDiv);
         
-        // Add row to container
-        mappingFieldsContainer.appendChild(mappingRow);
+        container.appendChild(mappingRow);
     });
-    
-    // Scroll to mapping section
-    mappingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**
- * Simple heuristic to check if two field names are similar
- * Used for auto-suggesting mappings
- * This implements a basic string similarity matching algorithm
+ * Find the best match for our field in their fields based on similarity scores
+ * @param {String} ourField - Our field name
+ * @param {Object} theirFields - Their fields with similarity scores
+ * @returns {Object} {field: bestFieldName, score: bestScore}
  */
-function areSimilarFieldNames(name1, name2) {
-    const n1 = name1.toLowerCase().replace(/[^a-z]/g, '');
-    const n2 = name2.toLowerCase().replace(/[^a-z]/g, '');
+function findBestMatchWithScore(ourField, theirFields) {
+    let bestField = null;
+    let bestScore = 0;
     
-    // Check if one contains the other
-    if (n1.includes(n2) || n2.includes(n1)) {
-        return true;
-    }
-    
-    // Check common patterns and synonyms
-    const patterns = {
-        'booker': ['guest', 'customer', 'client', 'name'],
-        'number': ['num', 'count'],
-        'people': ['guests', 'persons', 'capacity'],
-        'bedrooms': ['bedroom', 'bed', 'room'],
-        'distance': ['dist'],
-        'lake': ['water'],
-        'city': ['town', 'urban'],
-        'days': ['duration', 'period'],
-        'start': ['checkin', 'begin', 'from'],
-        'shift': ['flexibility', 'flex', 'adjust']
-    };
-    
-    for (const [key, synonyms] of Object.entries(patterns)) {
-        if (n1.includes(key) && synonyms.some(syn => n2.includes(syn))) {
-            return true;
-        }
-        if (n2.includes(key) && synonyms.some(syn => n1.includes(syn))) {
-            return true;
+    for (const [theirField, score] of Object.entries(theirFields)) {
+        if (score > bestScore) {
+            bestScore = score;
+            bestField = theirField;
         }
     }
     
-    return false;
+    return { field: bestField, score: bestScore };
 }
 
 /**
- * Confirm the mapping and send request with alignment to backend
- * This function is called when user clicks "Confirm Mapping & Search"
+ * Get similarity badge emoji based on score
+ */
+function getSimilarityEmoji(score) {
+    if (score >= 0.80) return '🟢';
+    if (score >= 0.70) return '🟡';
+    return '🔴';
+}
+
+/**
+ * Get CSS class for similarity badge
+ */
+function getSimilarityClass(score) {
+    if (score >= 0.80) return 'high';
+    if (score >= 0.70) return 'medium';
+    return 'low';
+}
+
+/**
+ * UPDATED: Confirm mapping and send BOTH input and output mappings to backend
  */
 function confirmMapping() {
-    // Collect all mappings from the dropdowns
-    const mappings = {};
-    const mappingSelects = document.querySelectorAll('.mapping-select');
+    // Collect INPUT mappings
+    const inputMappings = {};
+    const inputSelects = document.querySelectorAll('.mapping-select[data-mapping-type="input"]');
     
-    let allMapped = true;
-    mappingSelects.forEach(select => {
+    let allInputsMapped = true;
+    inputSelects.forEach(select => {
         const ourField = select.name;
         const theirField = select.value;
         
         if (!theirField) {
-            allMapped = false;
+            allInputsMapped = false;
         }
         
-        mappings[ourField] = theirField;
+        inputMappings[ourField] = theirField;
     });
     
-    // Validate that all fields are mapped
-    if (!allMapped) {
-        alert('⚠️ Please map all fields before confirming!');
+    // Collect OUTPUT mappings
+    const outputMappings = {};
+    const outputSelects = document.querySelectorAll('.mapping-select[data-mapping-type="output"]');
+    
+    let allOutputsMapped = true;
+    outputSelects.forEach(select => {
+        const ourField = select.name;
+        const theirField = select.value;
+        
+        if (!theirField) {
+            allOutputsMapped = false;
+        }
+        
+        outputMappings[ourField] = theirField;
+    });
+    
+    // Validate that ALL fields are mapped
+    if (!allInputsMapped || !allOutputsMapped) {
+        let message = '⚠️ Please map all fields before confirming!\n\n';
+        if (!allInputsMapped) message += '• Some INPUT fields are not mapped\n';
+        if (!allOutputsMapped) message += '• Some OUTPUT fields are not mapped\n';
+        alert(message);
         return;
     }
     
-    // Hide mapping section and show loading in results section
+    // Hide mapping section and show loading
     document.getElementById('mappingSection').style.display = 'none';
     document.getElementById('results').style.display = 'block';
     document.getElementById('cottageList').innerHTML = `
@@ -522,13 +553,12 @@ function confirmMapping() {
         </div>
     `;
     
-    // Disable the mapping confirm button
     const confirmBtn = document.querySelector('.mapping-confirm-btn');
     confirmBtn.disabled = true;
     confirmBtn.querySelector('.btn-text').style.display = 'none';
     confirmBtn.querySelector('.btn-loader').style.display = 'inline-block';
     
-    // Prepare data to send with mappings
+    // Prepare data to send with BOTH mappings
     const formData = new URLSearchParams();
     formData.append('reqType', 'searchCottageWithMapping');
     formData.append('serviceURL', originalSearchContext.serviceURL);
@@ -542,10 +572,11 @@ function confirmMapping() {
     formData.append('startDate', originalSearchContext.startDate);
     formData.append('possibleShift', originalSearchContext.dateShift);
     
-    // Add mappings as JSON string
-    formData.append('mappings', JSON.stringify(mappings));
+    // Add BOTH mappings as JSON strings
+    formData.append('inputMappings', JSON.stringify(inputMappings));
+    formData.append('outputMappings', JSON.stringify(outputMappings));
     
-    // Send request to backend with mappings
+    // Send request to backend
     fetch('MediatorServlet', {
         method: 'POST',
         headers: {
@@ -560,7 +591,6 @@ function confirmMapping() {
         return response.json();
     })
     .then(data => {
-        // Display the results
         displayResults(data, originalSearchContext.bookerName);
     })
     .catch(error => {
@@ -574,24 +604,14 @@ function confirmMapping() {
         `;
     })
     .finally(() => {
-        // Re-enable the confirm button
         confirmBtn.disabled = false;
         confirmBtn.querySelector('.btn-text').style.display = 'inline-block';
         confirmBtn.querySelector('.btn-loader').style.display = 'none';
     });
 }
 
-/**
- * Cancel the mapping and hide the mapping interface
- * This function is called when user clicks "Cancel" button
- */
 function cancelMapping() {
-    // Hide mapping section
     document.getElementById('mappingSection').style.display = 'none';
-    
-    // Clear stored context
     originalSearchContext = null;
-    
-    // Optionally show a message
     alert('Mapping cancelled. Please try searching again or use a different service URL.');
 }
