@@ -205,8 +205,9 @@ public class MediatorServlet extends HttpServlet {
         System.out.println("Detected alignments of RDG: " + result);
         
         RequestTemplate tpl = new RequestTemplate();
+        System.out.println("Is our ontology: " + result.isOurOntology());
         
-        if (result.isOurOntology) {
+        if (result.isOurOntology()) {
         	setLiteral(subject, m.createProperty(cfNs + "bookerName"),          bookerName);
         	setLiteral(subject, m.createProperty(cfNs + "numberOfPeople"),      numberOfPeople);
         	setLiteral(subject, m.createProperty(cfNs + "numberOfBedrooms"),    numberOfBedrooms);
@@ -219,7 +220,7 @@ public class MediatorServlet extends HttpServlet {
         	
         	tpl.model = m;
             tpl.cfNamespace = cfNs;
-        	tpl.isOurOntology = result.isOurOntology;
+        	tpl.isOurOntology = result.isOurOntology();
         } else {
         	
         }
@@ -297,8 +298,8 @@ public class MediatorServlet extends HttpServlet {
             if (accept != null && !accept.isEmpty()) {
                 conn.setRequestProperty("Accept", accept);
             }
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
 
             int status = conn.getResponseCode();
             InputStream is = (status >= 200 && status < 300)
@@ -398,10 +399,7 @@ public class MediatorServlet extends HttpServlet {
     
     private AlignmentResult buildAlignment(Model rdgModel, String cfNs, String alignmentId) {
 
-        // Collect all candidate properties
-    	latestAlignmentForUi.clear();
-    	boolean allMatchPerfectly = true;
-    	Map<String, Property> candidates = new HashMap<>();
+        Map<String, Property> candidates = new HashMap<>();
         rdgModel.listStatements().forEachRemaining(st -> {
             if (st.getPredicate() != null) {
                 Property p = st.getPredicate();
@@ -412,7 +410,6 @@ public class MediatorServlet extends HttpServlet {
             }
         });
 
-        // default names from our RdG
         String[] canonical = new String[] {
                 "bookerName",
                 "numberOfPeople",
@@ -436,56 +433,68 @@ public class MediatorServlet extends HttpServlet {
         };
 
         Map<String, Property> alignmentMap = new HashMap<>();
-        double perfectThreshold = 0.99;
-        double threshold = 0.7;
-        
-        for (String canon : canonical) {
+        Map<String, AlignmentCandidate> uiMap = new HashMap<>();
 
+        double lowConfidenceThreshold = 0.7;
+        double perfectMatchThreshold  = 0.99;
+        boolean ourOntology = true; // assume, then falsify
+
+        for (String canon : canonical) {
             double bestScore = -1.0;
             Property bestProp = null;
             String bestRemoteName = null;
 
-            for (Map.Entry<String, Property> entry : candidates.entrySet()) {
-
-                String remoteLocal = entry.getKey();
+            for (Map.Entry<String, Property> e : candidates.entrySet()) {
+                String remoteLocal = e.getKey();
                 double score = similarity(canon, remoteLocal);
-
                 if (score > bestScore) {
                     bestScore = score;
-                    bestProp = entry.getValue();
+                    bestProp = e.getValue();
                     bestRemoteName = remoteLocal;
                 }
             }
-            
+
             if (bestProp != null) {
                 alignmentMap.put(canon, bestProp);
 
-                // For UI
-                latestAlignmentForUi.put(
-                    canon,
-                    new AlignmentCandidate(canon, bestRemoteName, bestProp.getURI(), bestScore)
+                uiMap.put(
+                        canon,
+                        new AlignmentCandidate(
+                                canon,
+                                bestRemoteName,
+                                bestProp.getURI(),
+                                bestScore
+                        )
                 );
 
-                // Check perfect match (myName == remoteName AND high similarity)
-                boolean perfect =
-                    canon.equals(bestRemoteName) &&
-                    bestScore >= perfectThreshold;
+                System.out.println("Alignment: " + canon + " -> " +
+                                   bestProp.getURI() + " (score=" + bestScore + ")");
 
-                if (!perfect) {
-                    allMatchPerfectly = false;
+                if (bestScore < lowConfidenceThreshold) {
+                    System.out.println("  WARNING: low confidence for " + canon);
+                }
+
+                boolean isPerfect =
+                        canon.equals(bestRemoteName) &&
+                        bestScore >= perfectMatchThreshold;
+
+                if (!isPerfect) {
+                    ourOntology = false;
                 }
 
             } else {
-                alignmentMap.put(canon, null);
-                latestAlignmentForUi.put(
-                    canon,
-                    new AlignmentCandidate(canon, null, null, -1)
+                System.out.println("Alignment: no candidate found for " + canon);
+                uiMap.put(
+                        canon,
+                        new AlignmentCandidate(canon, null, null, -1.0)
                 );
-                allMatchPerfectly = false;
+                ourOntology = false;
             }
         }
 
-        return new AlignmentResult(alignmentMap, allMatchPerfectly);
+//        saveAlignmentToFile(alignmentMap, alignmentId);
+
+        return new AlignmentResult(alignmentMap, uiMap, ourOntology);
     }
     
     private double similarity(String a, String b) {
@@ -510,28 +519,5 @@ public class MediatorServlet extends HttpServlet {
         String bookingStartDate;
         String bookingEndDate;
     }
-    
-    public static class AlignmentCandidate {
-        public final String myName;
-        public final String remoteName;
-        public final String remoteUri;
-        public final double score;
-
-        public AlignmentCandidate(String myName, String remoteName, String remoteUri, double score) {
-            this.myName = myName;
-            this.remoteName = remoteName;
-            this.remoteUri = remoteUri;
-            this.score = score;
-        }
-    }
-    
-    public static class AlignmentResult {
-        public final Map<String, Property> alignmentMap;
-        public final boolean isOurOntology;
-
-        public AlignmentResult(Map<String, Property> alignmentMap, boolean isOurOntology) {
-            this.alignmentMap = alignmentMap;
-            this.isOurOntology = isOurOntology;
-        }
-    }
 }
+
