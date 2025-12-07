@@ -11,6 +11,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -205,7 +206,6 @@ public class MediatorServlet extends HttpServlet {
         System.out.println("Detected alignments of RDG: " + result);
         
         RequestTemplate tpl = new RequestTemplate();
-        System.out.println("Is our ontology: " + result.isOurOntology());
         
         if (result.isOurOntology()) {
         	setLiteral(subject, m.createProperty(cfNs + "bookerName"),          bookerName);
@@ -399,18 +399,27 @@ public class MediatorServlet extends HttpServlet {
     
     private AlignmentResult buildAlignment(Model rdgModel, String cfNs, String alignmentId) {
 
+        latestAlignmentForUi.clear();
+        boolean allMatchPerfectly = true;
+
         Map<String, Property> candidates = new HashMap<>();
         rdgModel.listStatements().forEachRemaining(st -> {
             if (st.getPredicate() != null) {
                 Property p = st.getPredicate();
                 String ns = p.getNameSpace();
                 if (ns != null && ns.equals(cfNs)) {
-                    candidates.put(p.getLocalName(), p);
+                    candidates.put(p.getLocalName(), p);   // LOCAL NAMES
                 }
             }
         });
 
-        String[] canonical = new String[] {
+        // Debugging: see what candidates we actually have
+        System.out.println("Candidate properties for namespace " + cfNs + ":");
+        for (Map.Entry<String, Property> e : candidates.entrySet()) {
+            System.out.println("  " + e.getKey() + " -> " + e.getValue().getURI());
+        }
+
+        String[] canonical = {
                 "bookerName",
                 "numberOfPeople",
                 "numberOfBedrooms",
@@ -433,23 +442,25 @@ public class MediatorServlet extends HttpServlet {
         };
 
         Map<String, Property> alignmentMap = new HashMap<>();
-        Map<String, AlignmentCandidate> uiMap = new HashMap<>();
-
+        double perfectThreshold = 0.99;
         double lowConfidenceThreshold = 0.7;
-        double perfectMatchThreshold  = 0.99;
-        boolean ourOntology = true; // assume, then falsify
 
         for (String canon : canonical) {
-            double bestScore = -1.0;
+            double bestScore = 1.0;
             Property bestProp = null;
             String bestRemoteName = null;
 
-            for (Map.Entry<String, Property> e : candidates.entrySet()) {
-                String remoteLocal = e.getKey();
+            for (Map.Entry<String, Property> entry : candidates.entrySet()) {
+                String remoteLocal = entry.getKey();
+                System.out.println("==================================");
+                System.out.println(canon);
+                System.out.println(remoteLocal);
                 double score = similarity(canon, remoteLocal);
+                System.out.println(score);
+
                 if (score > bestScore) {
                     bestScore = score;
-                    bestProp = e.getValue();
+                    bestProp = entry.getValue();
                     bestRemoteName = remoteLocal;
                 }
             }
@@ -457,51 +468,51 @@ public class MediatorServlet extends HttpServlet {
             if (bestProp != null) {
                 alignmentMap.put(canon, bestProp);
 
-                uiMap.put(
+                latestAlignmentForUi.put(
                         canon,
-                        new AlignmentCandidate(
-                                canon,
-                                bestRemoteName,
-                                bestProp.getURI(),
-                                bestScore
-                        )
+                        new AlignmentCandidate(canon, bestRemoteName, bestProp.getURI(), bestScore)
                 );
 
                 System.out.println("Alignment: " + canon + " -> " +
-                                   bestProp.getURI() + " (score=" + bestScore + ")");
+                        bestProp.getURI() + " (score=" + bestScore + ")");
 
                 if (bestScore < lowConfidenceThreshold) {
                     System.out.println("  WARNING: low confidence for " + canon);
                 }
 
-                boolean isPerfect =
+                boolean perfect =
                         canon.equals(bestRemoteName) &&
-                        bestScore >= perfectMatchThreshold;
+                        bestScore >= perfectThreshold;
 
-                if (!isPerfect) {
-                    ourOntology = false;
+                if (!perfect) {
+                    allMatchPerfectly = false;
                 }
-
             } else {
-                System.out.println("Alignment: no candidate found for " + canon);
-                uiMap.put(
+                alignmentMap.put(canon, null);
+                latestAlignmentForUi.put(
                         canon,
-                        new AlignmentCandidate(canon, null, null, -1.0)
+                        new AlignmentCandidate(canon, null, null, -1)
                 );
-                ourOntology = false;
+                allMatchPerfectly = false;
             }
         }
 
-//        saveAlignmentToFile(alignmentMap, alignmentId);
+//        saveAlignmentToFile(alignmentMap, alignmentId);  // if you have this
 
-        return new AlignmentResult(alignmentMap, uiMap, ourOntology);
+        return new AlignmentResult(alignmentMap, new HashMap<>(latestAlignmentForUi), allMatchPerfectly);
     }
+
     
     private double similarity(String a, String b) {
-        if (a == null || b == null) return 0.0;
+        if (a == null || b == null) return 1.0;
         JaroWinklerDistance dist = new JaroWinklerDistance();
         Double score = dist.apply(a.toLowerCase(), b.toLowerCase());
-        return (score == null) ? 0.0 : score;
+        
+        if (score == null) {
+        	return 0.0;
+        }
+        
+        return 1.0 - score;
     }
 
     private static class CottageResult {

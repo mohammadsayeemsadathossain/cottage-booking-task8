@@ -38,10 +38,14 @@ public class AlignmentResult {
         sb.append("  alignments:\n");
         for (Map.Entry<String, AlignmentCandidate> e : uiMap.entrySet()) {
             AlignmentCandidate ac = e.getValue();
-            sb.append("    ").append(ac.getMyName())
-              .append(" -> ").append(ac.getRemoteName())
-              .append(" (uri=").append(ac.getRemoteUri())
-              .append(", score=").append(ac.getScore())
+            sb.append("    ")
+              .append(ac.getMyName())
+              .append(" -> ")
+              .append(ac.getRemoteName())
+              .append(" (uri=")
+              .append(ac.getRemoteUri())
+              .append(", score=")
+              .append(ac.getScore())
               .append(")\n");
         }
         sb.append("}");
