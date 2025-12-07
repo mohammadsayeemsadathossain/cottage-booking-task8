@@ -122,7 +122,7 @@ public class MediatorServlet extends HttpServlet {
 
             List<CottageResult> cottages = parseResponseTurtle(responseTurtle, template.cfNamespace);
 
-            String jsonResponse = buildJsonResponse(cottages);
+            String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology);
             out.write(jsonResponse);
 
         } catch (Exception e) {
@@ -359,9 +359,9 @@ public class MediatorServlet extends HttpServlet {
         return sb.toString();
     }
 
-    private String buildJsonResponse(List<CottageResult> cottages) {
+    private String buildJsonResponse(List<CottageResult> cottages, Boolean requiresMapping) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"requiresMapping\":").append(true).append("\",");
+        sb.append("{\"requiresMapping\":").append(requiresMapping).append(",");
         sb.append("\"cottages\":[");
 
         for (int i = 0; i < cottages.size(); i++) {
@@ -385,6 +385,7 @@ public class MediatorServlet extends HttpServlet {
         }
 
         sb.append("]}");
+        System.out.println(sb);
         return sb.toString();
     }
 
@@ -446,7 +447,7 @@ public class MediatorServlet extends HttpServlet {
         double lowConfidenceThreshold = 0.7;
 
         for (String canon : canonical) {
-            double bestScore = 1.0;
+            double bestScore = -1.0;
             Property bestProp = null;
             String bestRemoteName = null;
 
