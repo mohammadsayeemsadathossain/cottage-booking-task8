@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Type;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -40,6 +42,7 @@ public class MediatorServlet extends HttpServlet {
 
     private static final String SSWAP_NS = "http://sswapmeet.sswap.info/sswap/";
     private Map<String, AlignmentCandidate> latestAlignmentForUi = new HashMap<>();
+    private MappingLoader mappingLoader = new MappingLoader();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -48,10 +51,20 @@ public class MediatorServlet extends HttpServlet {
     	request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        Map<String, AlignmentCandidate> userMapped = new HashMap<>();;
 
         try {
             String reqType = request.getParameter("reqType");
-            if (!"searchCottage".equals(reqType)) {
+            
+            if ("searchCottageWithMapping".equals(reqType)) {
+            	String userMappedJson = request.getParameter("inputMapping");
+            	Gson gson = new Gson();
+            	
+            	Type type = new TypeToken<Map<String, AlignmentCandidate>>() {}.getType();
+            	
+            	userMapped = gson.fromJson(userMappedJson, type);
+            	
+            } else if (!"searchCottage".equals(reqType)) {
                 out.write("{\"error\":\"Invalid request type\"}");
                 return;
             }
@@ -83,11 +96,34 @@ public class MediatorServlet extends HttpServlet {
             System.out.println("Start Date        : " + startDate);
             System.out.println("Possible Shift    : " + possibleShift);
             System.out.println("=======================================");
+            
+            if (!userMapped.isEmpty()) {
+            	MappingEntry entry = new MappingEntry(serviceURL, userMapped);
+            	List<MappingEntry> list = List.of(entry);
+            	mappingLoader.saveJsonData("mapping.json", list);
+            }
+            
 
             String rdgTurtle = httpGet(serviceURL, "text/turtle");
             System.out.println("=== RDG (Turtle) from remote service ===");
             System.out.println(rdgTurtle);
             System.out.println("========================================");
+            
+            MappingEntry foundEntry = null;
+            List<MappingEntry> mappings = mappingLoader.loadJsonData("mapping.json");
+            for (MappingEntry entry : mappings) {
+                if (entry.getURL().equalsIgnoreCase(serviceURL)) {
+                    foundEntry = entry;
+                    break;
+                }
+            }
+            
+            if (foundEntry != null) {
+            	RequestTemplate template;
+            	java.io.StringWriter sw = new java.io.StringWriter();
+                template.model.write(sw, "TURTLE");
+                String requestTurtle = sw.toString();
+            }
 
             RequestTemplate template = prepareRequestFromRdg(
                     rdgTurtle,
