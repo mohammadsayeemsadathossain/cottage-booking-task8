@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 
+import com.google.gson.Gson;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -105,6 +106,12 @@ public class MediatorServlet extends HttpServlet {
                 out.write("{\"error\":\"Could not interpret RDG from service\"}");
                 return;
             }
+            
+            if (!template.isOurOntology) {
+            	String jsonResponse = buildJsonResponse(new ArrayList<>(), !template.isOurOntology, template.alignmentResult.getUiMap());
+                out.write(jsonResponse);
+                return;
+            }
 
             java.io.StringWriter sw = new java.io.StringWriter();
             template.model.write(sw, "TURTLE");
@@ -122,7 +129,7 @@ public class MediatorServlet extends HttpServlet {
 
             List<CottageResult> cottages = parseResponseTurtle(responseTurtle, template.cfNamespace);
 
-            String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology);
+            String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology, new HashMap<>());
             out.write(jsonResponse);
 
         } catch (Exception e) {
@@ -139,6 +146,8 @@ public class MediatorServlet extends HttpServlet {
         Model model;
         String cfNamespace;
         Boolean isOurOntology;
+        AlignmentResult alignmentResult; 
+        
     }
 
     private RequestTemplate prepareRequestFromRdg(String rdgTurtle,
@@ -206,7 +215,7 @@ public class MediatorServlet extends HttpServlet {
         System.out.println("Detected alignments of RDG: " + result);
         
         RequestTemplate tpl = new RequestTemplate();
-        
+        tpl.isOurOntology = result.isOurOntology();
         if (result.isOurOntology()) {
         	setLiteral(subject, m.createProperty(cfNs + "bookerName"),          bookerName);
         	setLiteral(subject, m.createProperty(cfNs + "numberOfPeople"),      numberOfPeople);
@@ -217,13 +226,12 @@ public class MediatorServlet extends HttpServlet {
         	setLiteral(subject, m.createProperty(cfNs + "numberOfDays"),        numberOfDays);
         	setLiteral(subject, m.createProperty(cfNs + "startDate"),           startDate);
         	setLiteral(subject, m.createProperty(cfNs + "possibleShift"),       possibleShift);
-        	
-        	tpl.model = m;
-            tpl.cfNamespace = cfNs;
-        	tpl.isOurOntology = result.isOurOntology();
         } else {
-        	
+        	tpl.alignmentResult = result;
         }
+        
+        tpl.model = m;
+        tpl.cfNamespace = cfNs;
         return tpl;
     }
 
@@ -359,7 +367,21 @@ public class MediatorServlet extends HttpServlet {
         return sb.toString();
     }
 
-    private String buildJsonResponse(List<CottageResult> cottages, Boolean requiresMapping) {
+    private String buildJsonResponse(
+    		List<CottageResult> cottages, 
+    		Boolean requiresMapping, 
+    		Map<String, AlignmentCandidate> alignmentMap) {
+    	System.out.println(requiresMapping);
+    	if (requiresMapping) {
+    		Gson gson = new Gson();
+    		
+    		MediatorResponse responseObj =
+    		        new MediatorResponse(requiresMapping, cottages, alignmentMap);
+    		String json = gson.toJson(responseObj);
+    		System.out.println(json);
+    		return json;
+    	}
+    	
         StringBuilder sb = new StringBuilder();
         sb.append("{\"requiresMapping\":").append(requiresMapping).append(",");
         sb.append("\"cottages\":[");
@@ -453,11 +475,11 @@ public class MediatorServlet extends HttpServlet {
 
             for (Map.Entry<String, Property> entry : candidates.entrySet()) {
                 String remoteLocal = entry.getKey();
-                System.out.println("==================================");
-                System.out.println(canon);
-                System.out.println(remoteLocal);
+//                System.out.println("==================================");
+//                System.out.println(canon);
+//                System.out.println(remoteLocal);
                 double score = similarity(canon, remoteLocal);
-                System.out.println(score);
+//                System.out.println(score);
 
                 if (score > bestScore) {
                     bestScore = score;
@@ -530,6 +552,20 @@ public class MediatorServlet extends HttpServlet {
         String cityDistance;
         String bookingStartDate;
         String bookingEndDate;
+    }
+    
+    public class MediatorResponse {
+        public boolean requiresMapping;
+        public List<CottageResult> cottages;
+        public Map<String, AlignmentCandidate> inputMapping;
+
+        public MediatorResponse(boolean requiresMapping,
+                                List<CottageResult> cottages,
+                                Map<String, AlignmentCandidate> alignmentMap) {
+            this.requiresMapping = requiresMapping;
+            this.cottages = cottages;
+            this.inputMapping = alignmentMap;
+        }
     }
 }
 
