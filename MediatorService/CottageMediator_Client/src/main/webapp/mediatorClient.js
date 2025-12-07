@@ -1,6 +1,7 @@
 /**
  * Cottage Booking Mediator Client JavaScript
  * Task 7-2: Mediator Service Client
+ * Task 8: Added Ontology Alignment Support
  * Handles communication between user interface and SSWAP Mediator Servlet
  */
 
@@ -79,8 +80,14 @@ function searchCottages() {
         return response.json();
     })
     .then(data => {
-        // Display the results
-        displayResults(data, bookerName);
+        // Check if mapping is required (Task 8 - Ontology Alignment)
+        if (data.requiresMapping === true) {
+            // Show mapping interface
+            showMappingInterface(data);
+        } else {
+            // Display the results normally
+            displayResults(data, bookerName);
+        }
     })
     .catch(error => {
         console.error('Error communicating with mediator servlet:', error);
@@ -319,3 +326,272 @@ window.addEventListener('DOMContentLoaded', () => {
     defaultDate.setDate(defaultDate.getDate() + 7);
     startDateInput.value = defaultDate.toISOString().split('T')[0];
 });
+
+
+/**
+ * ===========================================================================
+ * TASK 8: ONTOLOGY ALIGNMENT FUNCTIONS
+ * These functions handle the ontology mapping interface for runtime alignment
+ * ===========================================================================
+ */
+
+// Variable to store the original search context during mapping
+let originalSearchContext = null;
+
+/**
+ * Store the original search form data before showing mapping interface
+ */
+function storeMappingContext() {
+    originalSearchContext = {
+        serviceURL: document.getElementById('serviceURL').value.trim(),
+        bookerName: document.getElementById('bookerName').value.trim(),
+        numPeople: document.getElementById('numPeople').value,
+        numBedrooms: document.getElementById('numBedrooms').value,
+        maxDistLake: document.getElementById('maxDistLake').value,
+        city: document.getElementById('city').value.trim(),
+        maxDistCity: document.getElementById('maxDistCity').value,
+        numDays: document.getElementById('numDays').value,
+        startDate: document.getElementById('startDate').value,
+        dateShift: document.getElementById('dateShift').value
+    };
+}
+
+/**
+ * Show the mapping interface when ontology mismatch is detected
+ * @param {Object} data - Response from backend with mapping information
+ */
+function showMappingInterface(data) {
+    // Store the original search context
+    storeMappingContext();
+    
+    // Hide results section if visible
+    document.getElementById('results').style.display = 'none';
+    
+    // Show mapping section
+    const mappingSection = document.getElementById('mappingSection');
+    mappingSection.style.display = 'block';
+    
+    // Get the container for mapping fields
+    const mappingFieldsContainer = document.getElementById('mappingFields');
+    mappingFieldsContainer.innerHTML = ''; // Clear previous content
+    
+    // Get our ontology fields and their ontology fields
+    const ourFields = data.ourOntology || {};
+    const theirFields = data.theirOntology || [];
+    
+    // Create mapping rows for each of our fields
+    Object.keys(ourFields).forEach(ourFieldName => {
+        const fieldDescription = ourFields[ourFieldName];
+        
+        // Create a mapping row
+        const mappingRow = document.createElement('div');
+        mappingRow.className = 'mapping-row';
+        
+        // Our field (left side)
+        const ourFieldDiv = document.createElement('div');
+        ourFieldDiv.className = 'our-field';
+        ourFieldDiv.innerHTML = `
+            <strong>${ourFieldName}</strong>
+            <br>
+            <span class="field-description">${fieldDescription}</span>
+        `;
+        
+        // Arrow
+        const arrowDiv = document.createElement('div');
+        arrowDiv.className = 'mapping-arrow';
+        arrowDiv.textContent = '→';
+        
+        // Their field dropdown (right side)
+        const theirFieldDiv = document.createElement('div');
+        theirFieldDiv.className = 'their-field';
+        
+        const selectElement = document.createElement('select');
+        selectElement.className = 'mapping-select';
+        selectElement.id = `mapping_${ourFieldName}`;
+        selectElement.name = ourFieldName;
+        
+        // Add default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = '-- Select their field --';
+        selectElement.appendChild(defaultOption);
+        
+        // Add options for each of their fields
+        theirFields.forEach(theirFieldName => {
+            const option = document.createElement('option');
+            option.value = theirFieldName;
+            option.textContent = theirFieldName;
+            
+            // Auto-select if names are similar (simple heuristic)
+            if (areSimilarFieldNames(ourFieldName, theirFieldName)) {
+                option.selected = true;
+            }
+            
+            selectElement.appendChild(option);
+        });
+        
+        theirFieldDiv.appendChild(selectElement);
+        
+        // Add all parts to the row
+        mappingRow.appendChild(ourFieldDiv);
+        mappingRow.appendChild(arrowDiv);
+        mappingRow.appendChild(theirFieldDiv);
+        
+        // Add row to container
+        mappingFieldsContainer.appendChild(mappingRow);
+    });
+    
+    // Scroll to mapping section
+    mappingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
+ * Simple heuristic to check if two field names are similar
+ * Used for auto-suggesting mappings
+ * This implements a basic string similarity matching algorithm
+ */
+function areSimilarFieldNames(name1, name2) {
+    const n1 = name1.toLowerCase().replace(/[^a-z]/g, '');
+    const n2 = name2.toLowerCase().replace(/[^a-z]/g, '');
+    
+    // Check if one contains the other
+    if (n1.includes(n2) || n2.includes(n1)) {
+        return true;
+    }
+    
+    // Check common patterns and synonyms
+    const patterns = {
+        'booker': ['guest', 'customer', 'client', 'name'],
+        'number': ['num', 'count'],
+        'people': ['guests', 'persons', 'capacity'],
+        'bedrooms': ['bedroom', 'bed', 'room'],
+        'distance': ['dist'],
+        'lake': ['water'],
+        'city': ['town', 'urban'],
+        'days': ['duration', 'period'],
+        'start': ['checkin', 'begin', 'from'],
+        'shift': ['flexibility', 'flex', 'adjust']
+    };
+    
+    for (const [key, synonyms] of Object.entries(patterns)) {
+        if (n1.includes(key) && synonyms.some(syn => n2.includes(syn))) {
+            return true;
+        }
+        if (n2.includes(key) && synonyms.some(syn => n1.includes(syn))) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+/**
+ * Confirm the mapping and send request with alignment to backend
+ * This function is called when user clicks "Confirm Mapping & Search"
+ */
+function confirmMapping() {
+    // Collect all mappings from the dropdowns
+    const mappings = {};
+    const mappingSelects = document.querySelectorAll('.mapping-select');
+    
+    let allMapped = true;
+    mappingSelects.forEach(select => {
+        const ourField = select.name;
+        const theirField = select.value;
+        
+        if (!theirField) {
+            allMapped = false;
+        }
+        
+        mappings[ourField] = theirField;
+    });
+    
+    // Validate that all fields are mapped
+    if (!allMapped) {
+        alert('⚠️ Please map all fields before confirming!');
+        return;
+    }
+    
+    // Hide mapping section and show loading in results section
+    document.getElementById('mappingSection').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('cottageList').innerHTML = `
+        <div class="loading-message">
+            <div class="loading-spinner"></div>
+            <p>Applying mappings and searching for cottages...</p>
+        </div>
+    `;
+    
+    // Disable the mapping confirm button
+    const confirmBtn = document.querySelector('.mapping-confirm-btn');
+    confirmBtn.disabled = true;
+    confirmBtn.querySelector('.btn-text').style.display = 'none';
+    confirmBtn.querySelector('.btn-loader').style.display = 'inline-block';
+    
+    // Prepare data to send with mappings
+    const formData = new URLSearchParams();
+    formData.append('reqType', 'searchCottageWithMapping');
+    formData.append('serviceURL', originalSearchContext.serviceURL);
+    formData.append('bookerName', originalSearchContext.bookerName);
+    formData.append('numberOfPeople', originalSearchContext.numPeople);
+    formData.append('numberOfBedrooms', originalSearchContext.numBedrooms);
+    formData.append('maxDistanceFromLake', originalSearchContext.maxDistLake);
+    formData.append('cityName', originalSearchContext.city);
+    formData.append('maxCityDistance', originalSearchContext.maxDistCity);
+    formData.append('numberOfDays', originalSearchContext.numDays);
+    formData.append('startDate', originalSearchContext.startDate);
+    formData.append('possibleShift', originalSearchContext.dateShift);
+    
+    // Add mappings as JSON string
+    formData.append('mappings', JSON.stringify(mappings));
+    
+    // Send request to backend with mappings
+    fetch('MediatorServlet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Display the results
+        displayResults(data, originalSearchContext.bookerName);
+    })
+    .catch(error => {
+        console.error('Error after mapping confirmation:', error);
+        document.getElementById('cottageList').innerHTML = `
+            <div class="error-message">
+                <strong>❌ Error:</strong> Unable to search cottages with the provided mappings.
+                <br><br>
+                <strong>Error details:</strong> ${error.message}
+            </div>
+        `;
+    })
+    .finally(() => {
+        // Re-enable the confirm button
+        confirmBtn.disabled = false;
+        confirmBtn.querySelector('.btn-text').style.display = 'inline-block';
+        confirmBtn.querySelector('.btn-loader').style.display = 'none';
+    });
+}
+
+/**
+ * Cancel the mapping and hide the mapping interface
+ * This function is called when user clicks "Cancel" button
+ */
+function cancelMapping() {
+    // Hide mapping section
+    document.getElementById('mappingSection').style.display = 'none';
+    
+    // Clear stored context
+    originalSearchContext = null;
+    
+    // Optionally show a message
+    alert('Mapping cancelled. Please try searching again or use a different service URL.');
+}
