@@ -10,13 +10,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -33,6 +37,7 @@ public class MediatorServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private static final String SSWAP_NS = "http://sswapmeet.sswap.info/sswap/";
+    private Map<String, AlignmentCandidate> latestAlignmentForUi = new HashMap<>();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -132,6 +137,7 @@ public class MediatorServlet extends HttpServlet {
     private static class RequestTemplate {
         Model model;
         String cfNamespace;
+        Boolean isOurOntology;
     }
 
     private RequestTemplate prepareRequestFromRdg(String rdgTurtle,
@@ -194,20 +200,29 @@ public class MediatorServlet extends HttpServlet {
 
         String cfNs = requestClass.getNameSpace();
         System.out.println("Detected cf namespace from RDG: " + cfNs);
-
-        setLiteral(subject, m.createProperty(cfNs + "bookerName"),          bookerName);
-        setLiteral(subject, m.createProperty(cfNs + "numberOfPeople"),      numberOfPeople);
-        setLiteral(subject, m.createProperty(cfNs + "numberOfBedrooms"),    numberOfBedrooms);
-        setLiteral(subject, m.createProperty(cfNs + "cityName"),            cityName);
-        setLiteral(subject, m.createProperty(cfNs + "maxDistanceFromLake"), maxDistanceFromLake);
-        setLiteral(subject, m.createProperty(cfNs + "nearestCity"),         maxCityDistance);
-        setLiteral(subject, m.createProperty(cfNs + "numberOfDays"),        numberOfDays);
-        setLiteral(subject, m.createProperty(cfNs + "startDate"),           startDate);
-        setLiteral(subject, m.createProperty(cfNs + "possibleShift"),       possibleShift);
-
+        
+        AlignmentResult result = buildAlignment(m, cfNs, cfNs);
+        System.out.println("Detected alignments of RDG: " + result);
+        
         RequestTemplate tpl = new RequestTemplate();
-        tpl.model = m;
-        tpl.cfNamespace = cfNs;
+        
+        if (result.isOurOntology) {
+        	setLiteral(subject, m.createProperty(cfNs + "bookerName"),          bookerName);
+        	setLiteral(subject, m.createProperty(cfNs + "numberOfPeople"),      numberOfPeople);
+        	setLiteral(subject, m.createProperty(cfNs + "numberOfBedrooms"),    numberOfBedrooms);
+        	setLiteral(subject, m.createProperty(cfNs + "cityName"),            cityName);
+        	setLiteral(subject, m.createProperty(cfNs + "maxDistanceFromLake"), maxDistanceFromLake);
+        	setLiteral(subject, m.createProperty(cfNs + "nearestCity"),         maxCityDistance);
+        	setLiteral(subject, m.createProperty(cfNs + "numberOfDays"),        numberOfDays);
+        	setLiteral(subject, m.createProperty(cfNs + "startDate"),           startDate);
+        	setLiteral(subject, m.createProperty(cfNs + "possibleShift"),       possibleShift);
+        	
+        	tpl.model = m;
+            tpl.cfNamespace = cfNs;
+        	tpl.isOurOntology = result.isOurOntology;
+        } else {
+        	
+        }
         return tpl;
     }
 
@@ -345,7 +360,8 @@ public class MediatorServlet extends HttpServlet {
 
     private String buildJsonResponse(List<CottageResult> cottages) {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\"cottages\":[");
+        sb.append("{\"requiresMapping\":").append(true).append("\",");
+        sb.append("\"cottages\":[");
 
         for (int i = 0; i < cottages.size(); i++) {
             CottageResult c = cottages.get(i);
@@ -379,6 +395,105 @@ public class MediatorServlet extends HttpServlet {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r");
     }
+    
+    private AlignmentResult buildAlignment(Model rdgModel, String cfNs, String alignmentId) {
+
+        // Collect all candidate properties
+    	latestAlignmentForUi.clear();
+    	boolean allMatchPerfectly = true;
+    	Map<String, Property> candidates = new HashMap<>();
+        rdgModel.listStatements().forEachRemaining(st -> {
+            if (st.getPredicate() != null) {
+                Property p = st.getPredicate();
+                String ns = p.getNameSpace();
+                if (ns != null && ns.equals(cfNs)) {
+                    candidates.put(p.getLocalName(), p);
+                }
+            }
+        });
+
+        // default names from our RdG
+        String[] canonical = new String[] {
+                "bookerName",
+                "numberOfPeople",
+                "numberOfBedrooms",
+                "maxDistanceFromLake",
+                "cityName",
+                "nearestCity",
+                "numberOfDays",
+                "startDate",
+                "possibleShift",
+                "bookingNumber",
+                "cottageID",
+                "cottageName",
+                "cottageAddress",
+                "imageURL",
+                "capacity",
+                "distanceFromLake",
+                "cityDistance",
+                "bookingStartDate",
+                "bookingEndDate"
+        };
+
+        Map<String, Property> alignmentMap = new HashMap<>();
+        double perfectThreshold = 0.99;
+        double threshold = 0.7;
+        
+        for (String canon : canonical) {
+
+            double bestScore = -1.0;
+            Property bestProp = null;
+            String bestRemoteName = null;
+
+            for (Map.Entry<String, Property> entry : candidates.entrySet()) {
+
+                String remoteLocal = entry.getKey();
+                double score = similarity(canon, remoteLocal);
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestProp = entry.getValue();
+                    bestRemoteName = remoteLocal;
+                }
+            }
+            
+            if (bestProp != null) {
+                alignmentMap.put(canon, bestProp);
+
+                // For UI
+                latestAlignmentForUi.put(
+                    canon,
+                    new AlignmentCandidate(canon, bestRemoteName, bestProp.getURI(), bestScore)
+                );
+
+                // Check perfect match (myName == remoteName AND high similarity)
+                boolean perfect =
+                    canon.equals(bestRemoteName) &&
+                    bestScore >= perfectThreshold;
+
+                if (!perfect) {
+                    allMatchPerfectly = false;
+                }
+
+            } else {
+                alignmentMap.put(canon, null);
+                latestAlignmentForUi.put(
+                    canon,
+                    new AlignmentCandidate(canon, null, null, -1)
+                );
+                allMatchPerfectly = false;
+            }
+        }
+
+        return new AlignmentResult(alignmentMap, allMatchPerfectly);
+    }
+    
+    private double similarity(String a, String b) {
+        if (a == null || b == null) return 0.0;
+        JaroWinklerDistance dist = new JaroWinklerDistance();
+        Double score = dist.apply(a.toLowerCase(), b.toLowerCase());
+        return (score == null) ? 0.0 : score;
+    }
 
     private static class CottageResult {
         String bookingNumber;
@@ -394,5 +509,29 @@ public class MediatorServlet extends HttpServlet {
         String cityDistance;
         String bookingStartDate;
         String bookingEndDate;
+    }
+    
+    public static class AlignmentCandidate {
+        public final String myName;
+        public final String remoteName;
+        public final String remoteUri;
+        public final double score;
+
+        public AlignmentCandidate(String myName, String remoteName, String remoteUri, double score) {
+            this.myName = myName;
+            this.remoteName = remoteName;
+            this.remoteUri = remoteUri;
+            this.score = score;
+        }
+    }
+    
+    public static class AlignmentResult {
+        public final Map<String, Property> alignmentMap;
+        public final boolean isOurOntology;
+
+        public AlignmentResult(Map<String, Property> alignmentMap, boolean isOurOntology) {
+            this.alignmentMap = alignmentMap;
+            this.isOurOntology = isOurOntology;
+        }
     }
 }
