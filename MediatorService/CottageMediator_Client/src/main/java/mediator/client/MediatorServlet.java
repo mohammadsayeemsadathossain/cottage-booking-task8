@@ -158,7 +158,6 @@ public class MediatorServlet extends HttpServlet {
                      startDate,
                      possibleShift
              );
-             // From here on, treat as if ontology is resolved.
              template.isOurOntology = true;
          }
 
