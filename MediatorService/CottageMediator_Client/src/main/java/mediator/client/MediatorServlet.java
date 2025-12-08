@@ -117,8 +117,7 @@ public class MediatorServlet extends HttpServlet {
                 }
             }
             
-            if (foundEntry != null) {
-            }
+
 
             RequestTemplate template = prepareRequestFromRdg(
                     rdgTurtle,
