@@ -2,6 +2,7 @@ package mediator.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,7 +27,7 @@ public class MappingLoader {
         File file = new File(jsonPath);
 
         if (!file.exists()) {
-            throw new IOException("Mapping JSON file not found at path: " + jsonPath);
+        	return new ArrayList<>();
         }
         
         return mapper.readValue(file, new TypeReference<List<MappingEntry>>() {});
