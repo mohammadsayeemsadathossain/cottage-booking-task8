@@ -11,7 +11,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.lang.reflect.Type;
@@ -119,10 +118,6 @@ public class MediatorServlet extends HttpServlet {
             }
             
             if (foundEntry != null) {
-            	RequestTemplate template;
-            	java.io.StringWriter sw = new java.io.StringWriter();
-                template.model.write(sw, "TURTLE");
-                String requestTurtle = sw.toString();
             }
 
             RequestTemplate template = prepareRequestFromRdg(
@@ -148,6 +143,25 @@ public class MediatorServlet extends HttpServlet {
                 out.write(jsonResponse);
                 return;
             }
+            
+            if (foundEntry != null && !foundEntry.getMapping().isEmpty()) {
+             applyUserMapping(
+                     template,
+                     foundEntry.getMapping(),
+                     bookerName,
+                     numberOfPeople,
+                     numberOfBedrooms,
+                     maxDistanceFromLake,
+                     cityName,
+                     maxCityDistance,
+                     numberOfDays,
+                     startDate,
+                     possibleShift
+             );
+             // From here on, treat as if ontology is resolved.
+             template.isOurOntology = true;
+         }
+
 
             java.io.StringWriter sw = new java.io.StringWriter();
             template.model.write(sw, "TURTLE");
@@ -180,6 +194,7 @@ public class MediatorServlet extends HttpServlet {
 
     private static class RequestTemplate {
         Model model;
+        Resource subject;
         String cfNamespace;
         Boolean isOurOntology;
         AlignmentResult alignmentResult; 
@@ -267,6 +282,7 @@ public class MediatorServlet extends HttpServlet {
         }
         
         tpl.model = m;
+        tpl.subject     = subject;
         tpl.cfNamespace = cfNs;
         return tpl;
     }
@@ -275,6 +291,57 @@ public class MediatorServlet extends HttpServlet {
         subject.removeAll(p);
         if (value == null) value = "";
         subject.addLiteral(p, value);
+    }
+    
+    private void applyUserMapping(RequestTemplate template,
+                                  Map<String, AlignmentCandidate> mapping,
+                                  String bookerName,
+                                  String numberOfPeople,
+                                  String numberOfBedrooms,
+                                  String maxDistanceFromLake,
+                                  String cityName,
+                                  String maxCityDistance,
+                                  String numberOfDays,
+                                  String startDate,
+                                  String possibleShift) {
+
+        if (template == null || template.subject == null || template.model == null) {
+            return;
+        }
+
+        Resource subject = template.subject;
+        Model model      = template.model;
+
+        setMappedLiteral(subject, model, mapping, "bookerName",          bookerName);
+        setMappedLiteral(subject, model, mapping, "numberOfPeople",      numberOfPeople);
+        setMappedLiteral(subject, model, mapping, "numberOfBedrooms",    numberOfBedrooms);
+        setMappedLiteral(subject, model, mapping, "maxDistanceFromLake", maxDistanceFromLake);
+        setMappedLiteral(subject, model, mapping, "cityName",            cityName);
+        setMappedLiteral(subject, model, mapping, "nearestCity",         maxCityDistance);
+        setMappedLiteral(subject, model, mapping, "numberOfDays",        numberOfDays);
+        setMappedLiteral(subject, model, mapping, "startDate",           startDate);
+        setMappedLiteral(subject, model, mapping, "possibleShift",       possibleShift);
+    }
+
+    /**
+     * Helper: use the remoteUri from the mapping for one canonical field.
+     */
+    private void setMappedLiteral(Resource subject,
+                                  Model model,
+                                  Map<String, AlignmentCandidate> mapping,
+                                  String canonicalName,
+                                  String value) {
+
+        if (mapping == null) return;
+
+        AlignmentCandidate candidate = mapping.get(canonicalName);
+        if (candidate == null) return;
+
+        String remoteUri = candidate.getRemoteUri();
+        if (remoteUri == null || remoteUri.trim().isEmpty()) return;
+
+        Property p = model.createProperty(remoteUri);
+        setLiteral(subject, p, value);
     }
 
 
@@ -555,8 +622,6 @@ public class MediatorServlet extends HttpServlet {
                 allMatchPerfectly = false;
             }
         }
-
-//        saveAlignmentToFile(alignmentMap, alignmentId);  // if you have this
 
         return new AlignmentResult(alignmentMap, new HashMap<>(latestAlignmentForUi), allMatchPerfectly);
     }
