@@ -11,9 +11,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.reflect.Type;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -39,6 +41,7 @@ public class MediatorServlet extends HttpServlet {
 
     private static final String SSWAP_NS = "http://sswapmeet.sswap.info/sswap/";
     private Map<String, AlignmentCandidate> latestAlignmentForUi = new HashMap<>();
+    private MappingLoader mappingLoader = new MappingLoader();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -47,10 +50,20 @@ public class MediatorServlet extends HttpServlet {
     	request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        Map<String, AlignmentCandidate> userMapped = new HashMap<>();;
 
         try {
             String reqType = request.getParameter("reqType");
-            if (!"searchCottage".equals(reqType)) {
+            
+            if ("searchCottageWithMapping".equals(reqType)) {
+            	String userMappedJson = request.getParameter("inputMapping");
+            	Gson gson = new Gson();
+            	
+            	Type type = new TypeToken<Map<String, AlignmentCandidate>>() {}.getType();
+            	
+            	userMapped = gson.fromJson(userMappedJson, type);
+            	
+            } else if (!"searchCottage".equals(reqType)) {
                 out.write("{\"error\":\"Invalid request type\"}");
                 return;
             }
@@ -82,11 +95,30 @@ public class MediatorServlet extends HttpServlet {
             System.out.println("Start Date        : " + startDate);
             System.out.println("Possible Shift    : " + possibleShift);
             System.out.println("=======================================");
+            
+            if (!userMapped.isEmpty()) {
+            	MappingEntry entry = new MappingEntry(serviceURL, userMapped);
+            	List<MappingEntry> list = List.of(entry);
+            	mappingLoader.saveJsonData("mapping.json", list);
+            }
+            
 
             String rdgTurtle = httpGet(serviceURL, "text/turtle");
             System.out.println("=== RDG (Turtle) from remote service ===");
             System.out.println(rdgTurtle);
             System.out.println("========================================");
+            
+            MappingEntry foundEntry = null;
+            List<MappingEntry> mappings = mappingLoader.loadJsonData("mapping.json");
+            for (MappingEntry entry : mappings) {
+                if (entry.getURL().equalsIgnoreCase(serviceURL)) {
+                    foundEntry = entry;
+                    break;
+                }
+            }
+            
+            if (foundEntry != null) {
+            }
 
             RequestTemplate template = prepareRequestFromRdg(
                     rdgTurtle,
@@ -105,6 +137,31 @@ public class MediatorServlet extends HttpServlet {
                 out.write("{\"error\":\"Could not interpret RDG from service\"}");
                 return;
             }
+            
+            if (!template.isOurOntology) {
+            	String jsonResponse = buildJsonResponse(new ArrayList<>(), !template.isOurOntology, template.alignmentResult.getUiMap());
+                out.write(jsonResponse);
+                return;
+            }
+            
+            if (foundEntry != null && !foundEntry.getMapping().isEmpty()) {
+             applyUserMapping(
+                     template,
+                     foundEntry.getMapping(),
+                     bookerName,
+                     numberOfPeople,
+                     numberOfBedrooms,
+                     maxDistanceFromLake,
+                     cityName,
+                     maxCityDistance,
+                     numberOfDays,
+                     startDate,
+                     possibleShift
+             );
+             // From here on, treat as if ontology is resolved.
+             template.isOurOntology = true;
+         }
+
 
             java.io.StringWriter sw = new java.io.StringWriter();
             template.model.write(sw, "TURTLE");
@@ -122,7 +179,7 @@ public class MediatorServlet extends HttpServlet {
 
             List<CottageResult> cottages = parseResponseTurtle(responseTurtle, template.cfNamespace);
 
-            String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology);
+            String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology, new HashMap<>());
             out.write(jsonResponse);
 
         } catch (Exception e) {
@@ -137,8 +194,11 @@ public class MediatorServlet extends HttpServlet {
 
     private static class RequestTemplate {
         Model model;
+        Resource subject;
         String cfNamespace;
         Boolean isOurOntology;
+        AlignmentResult alignmentResult; 
+        
     }
 
     private RequestTemplate prepareRequestFromRdg(String rdgTurtle,
@@ -206,7 +266,7 @@ public class MediatorServlet extends HttpServlet {
         System.out.println("Detected alignments of RDG: " + result);
         
         RequestTemplate tpl = new RequestTemplate();
-        
+        tpl.isOurOntology = result.isOurOntology();
         if (result.isOurOntology()) {
         	setLiteral(subject, m.createProperty(cfNs + "bookerName"),          bookerName);
         	setLiteral(subject, m.createProperty(cfNs + "numberOfPeople"),      numberOfPeople);
@@ -217,13 +277,13 @@ public class MediatorServlet extends HttpServlet {
         	setLiteral(subject, m.createProperty(cfNs + "numberOfDays"),        numberOfDays);
         	setLiteral(subject, m.createProperty(cfNs + "startDate"),           startDate);
         	setLiteral(subject, m.createProperty(cfNs + "possibleShift"),       possibleShift);
-        	
-        	tpl.model = m;
-            tpl.cfNamespace = cfNs;
-        	tpl.isOurOntology = result.isOurOntology();
         } else {
-        	
+        	tpl.alignmentResult = result;
         }
+        
+        tpl.model = m;
+        tpl.subject     = subject;
+        tpl.cfNamespace = cfNs;
         return tpl;
     }
 
@@ -231,6 +291,57 @@ public class MediatorServlet extends HttpServlet {
         subject.removeAll(p);
         if (value == null) value = "";
         subject.addLiteral(p, value);
+    }
+    
+    private void applyUserMapping(RequestTemplate template,
+                                  Map<String, AlignmentCandidate> mapping,
+                                  String bookerName,
+                                  String numberOfPeople,
+                                  String numberOfBedrooms,
+                                  String maxDistanceFromLake,
+                                  String cityName,
+                                  String maxCityDistance,
+                                  String numberOfDays,
+                                  String startDate,
+                                  String possibleShift) {
+
+        if (template == null || template.subject == null || template.model == null) {
+            return;
+        }
+
+        Resource subject = template.subject;
+        Model model      = template.model;
+
+        setMappedLiteral(subject, model, mapping, "bookerName",          bookerName);
+        setMappedLiteral(subject, model, mapping, "numberOfPeople",      numberOfPeople);
+        setMappedLiteral(subject, model, mapping, "numberOfBedrooms",    numberOfBedrooms);
+        setMappedLiteral(subject, model, mapping, "maxDistanceFromLake", maxDistanceFromLake);
+        setMappedLiteral(subject, model, mapping, "cityName",            cityName);
+        setMappedLiteral(subject, model, mapping, "nearestCity",         maxCityDistance);
+        setMappedLiteral(subject, model, mapping, "numberOfDays",        numberOfDays);
+        setMappedLiteral(subject, model, mapping, "startDate",           startDate);
+        setMappedLiteral(subject, model, mapping, "possibleShift",       possibleShift);
+    }
+
+    /**
+     * Helper: use the remoteUri from the mapping for one canonical field.
+     */
+    private void setMappedLiteral(Resource subject,
+                                  Model model,
+                                  Map<String, AlignmentCandidate> mapping,
+                                  String canonicalName,
+                                  String value) {
+
+        if (mapping == null) return;
+
+        AlignmentCandidate candidate = mapping.get(canonicalName);
+        if (candidate == null) return;
+
+        String remoteUri = candidate.getRemoteUri();
+        if (remoteUri == null || remoteUri.trim().isEmpty()) return;
+
+        Property p = model.createProperty(remoteUri);
+        setLiteral(subject, p, value);
     }
 
 
@@ -359,7 +470,21 @@ public class MediatorServlet extends HttpServlet {
         return sb.toString();
     }
 
-    private String buildJsonResponse(List<CottageResult> cottages, Boolean requiresMapping) {
+    private String buildJsonResponse(
+    		List<CottageResult> cottages, 
+    		Boolean requiresMapping, 
+    		Map<String, AlignmentCandidate> alignmentMap) {
+    	System.out.println(requiresMapping);
+    	if (requiresMapping) {
+    		Gson gson = new Gson();
+    		
+    		MediatorResponse responseObj =
+    		        new MediatorResponse(requiresMapping, cottages, alignmentMap);
+    		String json = gson.toJson(responseObj);
+    		System.out.println(json);
+    		return json;
+    	}
+    	
         StringBuilder sb = new StringBuilder();
         sb.append("{\"requiresMapping\":").append(requiresMapping).append(",");
         sb.append("\"cottages\":[");
@@ -453,11 +578,11 @@ public class MediatorServlet extends HttpServlet {
 
             for (Map.Entry<String, Property> entry : candidates.entrySet()) {
                 String remoteLocal = entry.getKey();
-                System.out.println("==================================");
-                System.out.println(canon);
-                System.out.println(remoteLocal);
+//                System.out.println("==================================");
+//                System.out.println(canon);
+//                System.out.println(remoteLocal);
                 double score = similarity(canon, remoteLocal);
-                System.out.println(score);
+//                System.out.println(score);
 
                 if (score > bestScore) {
                     bestScore = score;
@@ -498,8 +623,6 @@ public class MediatorServlet extends HttpServlet {
             }
         }
 
-//        saveAlignmentToFile(alignmentMap, alignmentId);  // if you have this
-
         return new AlignmentResult(alignmentMap, new HashMap<>(latestAlignmentForUi), allMatchPerfectly);
     }
 
@@ -530,6 +653,20 @@ public class MediatorServlet extends HttpServlet {
         String cityDistance;
         String bookingStartDate;
         String bookingEndDate;
+    }
+    
+    public class MediatorResponse {
+        public boolean requiresMapping;
+        public List<CottageResult> cottages;
+        public Map<String, AlignmentCandidate> inputMapping;
+
+        public MediatorResponse(boolean requiresMapping,
+                                List<CottageResult> cottages,
+                                Map<String, AlignmentCandidate> alignmentMap) {
+            this.requiresMapping = requiresMapping;
+            this.cottages = cottages;
+            this.inputMapping = alignmentMap;
+        }
     }
 }
 
