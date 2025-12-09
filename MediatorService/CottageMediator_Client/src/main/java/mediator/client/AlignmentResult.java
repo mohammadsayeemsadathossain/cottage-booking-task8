@@ -28,6 +28,10 @@ public class AlignmentResult {
     public Map<String, AlignmentCandidate> getUiMap() {
         return uiMap;
     }
+    
+    public String[] getCandidates() {
+        return candidates;
+    }
 
     public boolean isOurOntology() {
         return ourOntology;
