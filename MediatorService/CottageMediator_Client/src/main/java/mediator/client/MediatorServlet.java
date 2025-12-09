@@ -564,10 +564,15 @@ public class MediatorServlet extends HttpServlet {
                 "bookingStartDate",
                 "bookingEndDate"
         };
+        String[] clientCandidates = candidates.keySet().toArray(new String[0]);
+        System.out.println(clientCandidates);
+
 
         Map<String, Property> alignmentMap = new HashMap<>();
         double perfectThreshold = 0.99;
         double lowConfidenceThreshold = 0.7;
+        
+        
 
         for (String canon : canonical) {
             double bestScore = -1.0;
@@ -575,6 +580,7 @@ public class MediatorServlet extends HttpServlet {
             String bestRemoteName = null;
 
             for (Map.Entry<String, Property> entry : candidates.entrySet()) {
+            	
                 String remoteLocal = entry.getKey();
 //                System.out.println("==================================");
 //                System.out.println(canon);
@@ -621,7 +627,7 @@ public class MediatorServlet extends HttpServlet {
             }
         }
 
-        return new AlignmentResult(alignmentMap, new HashMap<>(latestAlignmentForUi), allMatchPerfectly);
+        return new AlignmentResult(alignmentMap, new HashMap<>(latestAlignmentForUi), clientCandidates, allMatchPerfectly);
     }
 
     

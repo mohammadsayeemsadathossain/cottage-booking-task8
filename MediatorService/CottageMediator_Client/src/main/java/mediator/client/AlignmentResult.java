@@ -12,6 +12,7 @@ public class AlignmentResult {
 
     public AlignmentResult(Map<String, Property> alignmentMap,
                            Map<String, AlignmentCandidate> uiMap,
+                           String[] candidates,
                            boolean ourOntology) {
         this.alignmentMap = alignmentMap;
         this.uiMap = uiMap;
