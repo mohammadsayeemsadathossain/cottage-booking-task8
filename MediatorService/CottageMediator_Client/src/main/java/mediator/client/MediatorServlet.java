@@ -138,7 +138,8 @@ public class MediatorServlet extends HttpServlet {
             }
             
             if (!template.isOurOntology) {
-            	String jsonResponse = buildJsonResponse(new ArrayList<>(), !template.isOurOntology, template.alignmentResult.getUiMap());
+            	String jsonResponse = buildJsonResponse(new ArrayList<>(), !template.isOurOntology, 
+            			template.alignmentResult.getUiMap(), template.alignmentResult.getCandidates());
                 out.write(jsonResponse);
                 return;
             }
@@ -177,7 +178,7 @@ public class MediatorServlet extends HttpServlet {
 
             List<CottageResult> cottages = parseResponseTurtle(responseTurtle, template.cfNamespace);
 
-            String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology, new HashMap<>());
+            String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology, new HashMap<>(), null);
             out.write(jsonResponse);
 
         } catch (Exception e) {
@@ -471,13 +472,14 @@ public class MediatorServlet extends HttpServlet {
     private String buildJsonResponse(
     		List<CottageResult> cottages, 
     		Boolean requiresMapping, 
-    		Map<String, AlignmentCandidate> alignmentMap) {
+    		Map<String, AlignmentCandidate> alignmentMap,
+    		String [] candidates) {
     	System.out.println(requiresMapping);
     	if (requiresMapping) {
     		Gson gson = new Gson();
     		
     		MediatorResponse responseObj =
-    		        new MediatorResponse(requiresMapping, cottages, alignmentMap);
+    		        new MediatorResponse(requiresMapping, cottages, alignmentMap, candidates);
     		String json = gson.toJson(responseObj);
     		System.out.println(json);
     		return json;
@@ -663,13 +665,16 @@ public class MediatorServlet extends HttpServlet {
         public boolean requiresMapping;
         public List<CottageResult> cottages;
         public Map<String, AlignmentCandidate> inputMapping;
+        public String[] candidates;
 
         public MediatorResponse(boolean requiresMapping,
                                 List<CottageResult> cottages,
-                                Map<String, AlignmentCandidate> alignmentMap) {
+                                Map<String, AlignmentCandidate> alignmentMap,
+                                String[] candidates) {
             this.requiresMapping = requiresMapping;
             this.cottages = cottages;
             this.inputMapping = alignmentMap;
+            this.candidates = candidates;
         }
     }
 }
