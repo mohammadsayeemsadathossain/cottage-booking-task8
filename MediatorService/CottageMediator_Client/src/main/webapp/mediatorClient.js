@@ -1,11 +1,10 @@
 /**
  * Cottage Booking Mediator Client JavaScript
- * Task 7-2: Mediator Service Client
- * Task 8: UPDATED - Complete Input & Output Ontology Alignment
- * - Maps 9 INPUTS (hasMapping - Subject/RIG)
- * - Maps 11 OUTPUTS (mapsTo - Object/RRG)
- * - Auto-selects based on similarity scores from Apache Commons Text
- * - Visual similarity indicators
+ * Task 8: FINAL VERSION - Matches Backend Structure
+ * WITH USER SELECTION CAPABILITY
+ * Backend sends: { requiresMapping, cottages, inputMapping }
+ * inputMapping = Map<String, AlignmentCandidate>
+ * AlignmentCandidate = { myName, remoteName, remoteUri, score }
  */
 
 /**
@@ -75,6 +74,8 @@ function searchCottages() {
         return response.json();
     })
     .then(data => {
+        console.log('Backend response:', data);
+        
         if (data.requiresMapping === true) {
             showMappingInterface(data);
         } else {
@@ -290,14 +291,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /**
  * ===========================================================================
- * TASK 8: UPDATED ONTOLOGY ALIGNMENT FUNCTIONS
- * - Maps both INPUTS (9 fields) and OUTPUTS (11 fields)
- * - Auto-selects based on similarity scores from backend (Apache Commons Text)
- * - Visual similarity indicators (Green/Yellow/Red badges)
+ * TASK 8: FINAL ONTOLOGY ALIGNMENT FUNCTIONS
+ * WITH USER DROPDOWN SELECTION CAPABILITY
  * ===========================================================================
  */
 
 let originalSearchContext = null;
+let allRemoteFields = {}; // Store all remote fields with their details
 
 function storeMappingContext() {
     originalSearchContext = {
@@ -315,16 +315,11 @@ function storeMappingContext() {
 }
 
 /**
- * UPDATED: Show mapping interface with BOTH input and output mappings
- * @param {Object} data - Response from backend with mapping information
- * Expected format:
- * {
- *   requiresMapping: true,
- *   inputMapping: { ourInputs: {...}, theirInputs: {field: score, ...} },
- *   outputMapping: { ourOutputs: {...}, theirOutputs: {field: score, ...} }
- * }
+ * Show mapping interface with dropdown selection
  */
 function showMappingInterface(data) {
+    console.log('Showing mapping interface with data:', data);
+    
     storeMappingContext();
     
     document.getElementById('results').style.display = 'none';
@@ -332,44 +327,60 @@ function showMappingInterface(data) {
     const mappingSection = document.getElementById('mappingSection');
     mappingSection.style.display = 'block';
     
-    // Generate INPUT mappings (9 fields)
-    const inputMappingContainer = document.getElementById('inputMappingFields');
-    inputMappingContainer.innerHTML = '';
+    // Get the inputMapping (which contains ALL fields - inputs + outputs)
+    const inputMapping = data.inputMapping || {};
     
-    if (data.inputMapping) {
-        const ourInputs = data.inputMapping.ourInputs || {};
-        const theirInputs = data.inputMapping.theirInputs || {};
-        
-        generateMappingRows(inputMappingContainer, ourInputs, theirInputs, 'input');
-    }
+    console.log('InputMapping keys:', Object.keys(inputMapping));
+    console.log('InputMapping:', inputMapping);
     
-    // Generate OUTPUT mappings (11 fields)
-    const outputMappingContainer = document.getElementById('outputMappingFields');
-    outputMappingContainer.innerHTML = '';
+    // Build list of all unique remote fields from the mapping
+    allRemoteFields = buildRemoteFieldsList(inputMapping);
     
-    if (data.outputMapping) {
-        const ourOutputs = data.outputMapping.ourOutputs || {};
-        const theirOutputs = data.outputMapping.theirOutputs || {};
-        
-        generateMappingRows(outputMappingContainer, ourOutputs, theirOutputs, 'output');
-    }
+    // Generate all mapping rows with dropdowns
+    const allMappingContainer = document.getElementById('allMappingFields');
+    allMappingContainer.innerHTML = '';
+    
+    generateMappingRows(allMappingContainer, inputMapping);
     
     mappingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**
- * Generate mapping rows for either inputs or outputs
- * @param {HTMLElement} container - Container to add rows to
- * @param {Object} ourFields - Our field names and descriptions
- * @param {Object} theirFields - Their field names with similarity scores
- * @param {String} mappingType - 'input' or 'output'
+ * Build a comprehensive list of all remote fields
  */
-function generateMappingRows(container, ourFields, theirFields, mappingType) {
-    Object.keys(ourFields).forEach(ourFieldName => {
-        const fieldDescription = ourFields[ourFieldName];
+function buildRemoteFieldsList(inputMapping) {
+    const remoteFields = {};
+    
+    Object.values(inputMapping).forEach(candidate => {
+        const remoteName = candidate.remoteName;
+        remoteFields[remoteName] = {
+            remoteName: remoteName,
+            remoteUri: candidate.remoteUri,
+            score: candidate.score
+        };
+    });
+    
+    return remoteFields;
+}
+
+/**
+ * Generate mapping rows with DROPDOWNS for user selection
+ */
+function generateMappingRows(container, mappings) {
+    const fieldDescriptions = getFieldDescriptions();
+    
+    // Sort by field name for better organization
+    const sortedFields = Object.keys(mappings).sort();
+    
+    sortedFields.forEach(ourFieldName => {
+        const candidate = mappings[ourFieldName];
         
-        // Find best match based on similarity scores
-        const bestMatch = findBestMatchWithScore(ourFieldName, theirFields);
+        const myName = candidate.myName;
+        const remoteName = candidate.remoteName;
+        const remoteUri = candidate.remoteUri;
+        const score = candidate.score;
+        
+        const fieldDescription = fieldDescriptions[ourFieldName] || ourFieldName;
         
         // Create mapping row
         const mappingRow = document.createElement('div');
@@ -379,7 +390,7 @@ function generateMappingRows(container, ourFields, theirFields, mappingType) {
         const ourFieldDiv = document.createElement('div');
         ourFieldDiv.className = 'our-field';
         ourFieldDiv.innerHTML = `
-            <strong>${ourFieldName}</strong>
+            <strong>${myName}</strong>
             <br>
             <span class="field-description">${fieldDescription}</span>
         `;
@@ -389,67 +400,68 @@ function generateMappingRows(container, ourFields, theirFields, mappingType) {
         arrowDiv.className = 'mapping-arrow';
         arrowDiv.textContent = '→';
         
-        // Their field dropdown (right side)
+        // Their field (right side) - DROPDOWN with pre-selection
         const theirFieldDiv = document.createElement('div');
         theirFieldDiv.className = 'their-field';
         
-        const selectElement = document.createElement('select');
-        selectElement.className = 'mapping-select';
-        selectElement.id = `mapping_${mappingType}_${ourFieldName}`;
-        selectElement.name = ourFieldName;
-        selectElement.dataset.mappingType = mappingType;
+        // Create dropdown
+        const dropdown = document.createElement('select');
+        dropdown.className = 'field-dropdown';
+        dropdown.dataset.myName = myName;
+        dropdown.dataset.originalRemoteName = remoteName;
+        dropdown.dataset.originalRemoteUri = remoteUri;
+        dropdown.dataset.originalScore = score;
         
-        // Add default option
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        
-        if (bestMatch.score < 0.70) {
-            defaultOption.textContent = '-- Select Field (Low Match) --';
-        } else {
-            defaultOption.textContent = '-- Select Field --';
+        // Add "Select Your Field" option if no match
+        if (!remoteName || score === 0) {
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Select Your Field --';
+            dropdown.appendChild(defaultOption);
         }
-        selectElement.appendChild(defaultOption);
         
-        // Add options for each of their fields with scores
-        const sortedFields = Object.entries(theirFields).sort((a, b) => b[1] - a[1]);
-        
-        sortedFields.forEach(([theirFieldName, score]) => {
+        // Add all remote fields as options
+        Object.keys(allRemoteFields).sort().forEach(fieldName => {
             const option = document.createElement('option');
-            option.value = theirFieldName;
+            option.value = fieldName;
+            option.textContent = fieldName;
             
-            const percentage = Math.round(score * 100);
-            const badge = getSimilarityEmoji(score);
-            option.textContent = `${theirFieldName} ${badge} ${percentage}%`;
-            
-            // Auto-select if this is the best match and score >= 0.70
-            if (bestMatch.field === theirFieldName && bestMatch.score >= 0.70) {
+            // Pre-select the matched field
+            if (fieldName === remoteName) {
                 option.selected = true;
             }
             
-            selectElement.appendChild(option);
+            dropdown.appendChild(option);
         });
         
-        // Add similarity badge display
-        const similarityBadge = document.createElement('div');
-        similarityBadge.className = 'similarity-indicator';
-        if (bestMatch.score >= 0.70) {
-            const percentage = Math.round(bestMatch.score * 100);
-            const badgeClass = getSimilarityClass(bestMatch.score);
-            similarityBadge.innerHTML = `
-                <span class="similarity-badge ${badgeClass}">
-                    ${getSimilarityEmoji(bestMatch.score)} ${percentage}% match
-                </span>
+        // Add change event listener
+        dropdown.addEventListener('change', function() {
+            updateMatchInfo(this);
+        });
+        
+        theirFieldDiv.appendChild(dropdown);
+        
+        // Match info display (score + URI)
+        const matchInfo = document.createElement('div');
+        matchInfo.className = 'match-info';
+        matchInfo.dataset.myName = myName;
+        
+        if (remoteName && score > 0) {
+            matchInfo.innerHTML = `
+                <div class="match-score">
+                    ${getSimilarityBadgeHTML(score)}
+                </div>
+                <div class="remote-uri">${remoteUri}</div>
             `;
         } else {
-            similarityBadge.innerHTML = `
-                <span class="similarity-badge low">
-                    🔴 Low similarity - manual selection needed
-                </span>
+            matchInfo.innerHTML = `
+                <div class="match-score">
+                    <span class="no-match">No automatic match - please select</span>
+                </div>
             `;
         }
         
-        theirFieldDiv.appendChild(selectElement);
-        theirFieldDiv.appendChild(similarityBadge);
+        theirFieldDiv.appendChild(matchInfo);
         
         // Add all parts to the row
         mappingRow.appendChild(ourFieldDiv);
@@ -461,87 +473,139 @@ function generateMappingRows(container, ourFields, theirFields, mappingType) {
 }
 
 /**
- * Find the best match for our field in their fields based on similarity scores
- * @param {String} ourField - Our field name
- * @param {Object} theirFields - Their fields with similarity scores
- * @returns {Object} {field: bestFieldName, score: bestScore}
+ * Update match info when user changes dropdown selection
  */
-function findBestMatchWithScore(ourField, theirFields) {
-    let bestField = null;
-    let bestScore = 0;
+function updateMatchInfo(dropdown) {
+    const selectedField = dropdown.value;
+    const myName = dropdown.dataset.myName;
+    const matchInfo = dropdown.parentElement.querySelector('.match-info[data-my-name="' + myName + '"]');
     
-    for (const [theirField, score] of Object.entries(theirFields)) {
-        if (score > bestScore) {
-            bestScore = score;
-            bestField = theirField;
-        }
-    }
-    
-    return { field: bestField, score: bestScore };
-}
-
-/**
- * Get similarity badge emoji based on score
- */
-function getSimilarityEmoji(score) {
-    if (score >= 0.80) return '🟢';
-    if (score >= 0.70) return '🟡';
-    return '🔴';
-}
-
-/**
- * Get CSS class for similarity badge
- */
-function getSimilarityClass(score) {
-    if (score >= 0.80) return 'high';
-    if (score >= 0.70) return 'medium';
-    return 'low';
-}
-
-/**
- * UPDATED: Confirm mapping and send BOTH input and output mappings to backend
- */
-function confirmMapping() {
-    // Collect INPUT mappings
-    const inputMappings = {};
-    const inputSelects = document.querySelectorAll('.mapping-select[data-mapping-type="input"]');
-    
-    let allInputsMapped = true;
-    inputSelects.forEach(select => {
-        const ourField = select.name;
-        const theirField = select.value;
-        
-        if (!theirField) {
-            allInputsMapped = false;
-        }
-        
-        inputMappings[ourField] = theirField;
-    });
-    
-    // Collect OUTPUT mappings
-    const outputMappings = {};
-    const outputSelects = document.querySelectorAll('.mapping-select[data-mapping-type="output"]');
-    
-    let allOutputsMapped = true;
-    outputSelects.forEach(select => {
-        const ourField = select.name;
-        const theirField = select.value;
-        
-        if (!theirField) {
-            allOutputsMapped = false;
-        }
-        
-        outputMappings[ourField] = theirField;
-    });
-    
-    // Validate that ALL fields are mapped
-    if (!allInputsMapped || !allOutputsMapped) {
-        let message = '⚠️ Please map all fields before confirming!\n\n';
-        if (!allInputsMapped) message += '• Some INPUT fields are not mapped\n';
-        if (!allOutputsMapped) message += '• Some OUTPUT fields are not mapped\n';
-        alert(message);
+    if (!selectedField) {
+        matchInfo.innerHTML = `
+            <div class="match-score">
+                <span class="no-match">Please select a field</span>
+            </div>
+        `;
         return;
     }
+    
+    // Get info about selected remote field
+    const remoteFieldInfo = allRemoteFields[selectedField];
+    
+    if (remoteFieldInfo) {
+        // Check if this is the original match or a user override
+        const originalRemoteName = dropdown.dataset.originalRemoteName;
+        const isOriginalMatch = (selectedField === originalRemoteName);
+        
+        let scoreHTML = '';
+        if (isOriginalMatch) {
+            const originalScore = parseFloat(dropdown.dataset.originalScore);
+            scoreHTML = getSimilarityBadgeHTML(originalScore);
+        } else {
+            scoreHTML = '<span class="user-override">👤 User Selected</span>';
+        }
+        
+        matchInfo.innerHTML = `
+            <div class="match-score">
+                ${scoreHTML}
+            </div>
+            <div class="remote-uri">${remoteFieldInfo.remoteUri}</div>
+        `;
+    }
+}
+
+/**
+ * Get field descriptions for better UI
+ */
+function getFieldDescriptions() {
+    return {
+        // Input fields (9)
+        'bookerName': 'Name of the person booking',
+        'numberOfPeople': 'Number of people',
+        'numberOfBedrooms': 'Number of bedrooms required',
+        'maxDistanceFromLake': 'Maximum distance from lake (meters)',
+        'cityName': 'Name of nearest city',
+        'maxCityDistance': 'Maximum distance to city (meters)',
+        'numberOfDays': 'Number of days for booking',
+        'startDate': 'Start date of booking',
+        'possibleShift': 'Possible date shift (+/- days)',
+        
+        // Output fields (11)
+        'bookingNumber': 'Unique booking number',
+        'cottageAddress': 'Address of the cottage',
+        'imageURL': 'Image URL of the cottage',
+        'capacity': 'Actual capacity (number of people)',
+        'distanceFromLake': 'Actual distance to lake (meters)',
+        'cityDistance': 'Distance to city (meters)',
+        'bookingStartDate': 'Booking start date',
+        'bookingEndDate': 'Booking end date'
+    };
+}
+
+/**
+ * Get similarity badge HTML based on score
+ */
+function getSimilarityBadgeHTML(score) {
+    const percentage = Math.round(score * 100);
+    let badgeClass = 'low';
+    let emoji = '🔴';
+    
+    if (score >= 0.80) {
+        badgeClass = 'high';
+        emoji = '🟢';
+    } else if (score >= 0.70) {
+        badgeClass = 'medium';
+        emoji = '🟡';
+    }
+    
+    return `<span class="similarity-badge ${badgeClass}">${emoji} ${percentage}%</span>`;
+}
+
+/**
+ * Confirm mapping and send to backend
+ */
+function confirmMapping() {
+    console.log('Confirming mapping...');
+    
+    // Collect all mappings from dropdowns
+    const mappings = {};
+    const dropdowns = document.querySelectorAll('.field-dropdown');
+    
+    let hasUnmapped = false;
+    
+    dropdowns.forEach(dropdown => {
+        const myName = dropdown.dataset.myName;
+        const selectedRemoteName = dropdown.value;
+        
+        if (!selectedRemoteName) {
+            hasUnmapped = true;
+            return;
+        }
+        
+        const remoteFieldInfo = allRemoteFields[selectedRemoteName];
+        const originalRemoteName = dropdown.dataset.originalRemoteName;
+        
+        // Determine score (use original if same, otherwise 1.0 for user selection)
+        let finalScore = 1.0;
+        if (selectedRemoteName === originalRemoteName) {
+            finalScore = parseFloat(dropdown.dataset.originalScore);
+        }
+        
+        // Recreate AlignmentCandidate structure
+        mappings[myName] = {
+            myName: myName,
+            remoteName: selectedRemoteName,
+            remoteUri: remoteFieldInfo.remoteUri,
+            score: finalScore
+        };
+    });
+    
+    if (hasUnmapped) {
+        alert('⚠️ Please map all fields before confirming!\n\nSome fields are not yet mapped to remote fields.');
+        return;
+    }
+    
+    console.log('Collected mappings:', mappings);
     
     // Hide mapping section and show loading
     document.getElementById('mappingSection').style.display = 'none';
@@ -558,7 +622,7 @@ function confirmMapping() {
     confirmBtn.querySelector('.btn-text').style.display = 'none';
     confirmBtn.querySelector('.btn-loader').style.display = 'inline-block';
     
-    // Prepare data to send with BOTH mappings
+    // Prepare data to send
     const formData = new URLSearchParams();
     formData.append('reqType', 'searchCottageWithMapping');
     formData.append('serviceURL', originalSearchContext.serviceURL);
@@ -572,9 +636,10 @@ function confirmMapping() {
     formData.append('startDate', originalSearchContext.startDate);
     formData.append('possibleShift', originalSearchContext.dateShift);
     
-    // Add BOTH mappings as JSON strings
-    formData.append('inputMappings', JSON.stringify(inputMappings));
-    formData.append('outputMappings', JSON.stringify(outputMappings));
+    // Send mappings as JSON string
+    formData.append('inputMapping', JSON.stringify(mappings));
+    
+    console.log('Sending to backend:', Object.fromEntries(formData));
     
     // Send request to backend
     fetch('MediatorServlet', {
@@ -591,6 +656,7 @@ function confirmMapping() {
         return response.json();
     })
     .then(data => {
+        console.log('Backend response after mapping:', data);
         displayResults(data, originalSearchContext.bookerName);
     })
     .catch(error => {
@@ -613,5 +679,6 @@ function confirmMapping() {
 function cancelMapping() {
     document.getElementById('mappingSection').style.display = 'none';
     originalSearchContext = null;
+    allRemoteFields = {};
     alert('Mapping cancelled. Please try searching again or use a different service URL.');
 }

@@ -26,7 +26,7 @@
                        id="serviceURL" 
                        name="serviceURL" 
                        placeholder="http://localhost:8080/CottageService/searchCottageService"
-                       >
+                       value="http://localhost:8080/CottageService/searchCottageService">
                 <p class="help-text">🔍 Enter the URL of the remote SSWAP Cottage Booking Service</p>
             </div>
         </div>
@@ -97,7 +97,7 @@
             </button>
         </div>
 
-        <!-- MAPPING INTERFACE SECTION (Task 8 - UPDATED: Input + Output Mapping) -->
+        <!-- MAPPING INTERFACE SECTION (Task 8 - FINAL VERSION) -->
         <div id="mappingSection" class="mapping-section" style="display: none;">
             <h2>🔗 Ontology Mapping Required</h2>
             <p class="mapping-description">
@@ -113,24 +113,12 @@
                 You can review and change any selection. All fields must be mapped before continuing.
             </div>
 
-            <!-- Two-column layout for Input and Output mappings -->
-            <div class="mapping-container">
-                <!-- LEFT COLUMN: Input Mapping (hasMapping - 9 fields) -->
-                <div class="mapping-column">
-                    <h3 class="mapping-column-title">📥 Input Mapping (9 Fields)</h3>
-                    <p class="mapping-column-subtitle">Map YOUR input fields to THEIR input fields (RIG/Subject)</p>
-                    <div id="inputMappingFields" class="mapping-fields">
-                        <!-- Input mapping fields will be dynamically generated here -->
-                    </div>
-                </div>
-
-                <!-- RIGHT COLUMN: Output Mapping (mapsTo - 11 fields) -->
-                <div class="mapping-column">
-                    <h3 class="mapping-column-title">📤 Output Mapping (11 Fields)</h3>
-                    <p class="mapping-column-subtitle">Map YOUR output fields to THEIR output fields (RRG/Object)</p>
-                    <div id="outputMappingFields" class="mapping-fields">
-                        <!-- Output mapping fields will be dynamically generated here -->
-                    </div>
+            <!-- Single container for all field mappings (inputs + outputs combined) -->
+            <div class="mapping-fields-container">
+                <h3 class="mapping-section-title">📋 Field Mappings (All Fields)</h3>
+                <p class="mapping-section-subtitle">Map YOUR fields to THEIR fields</p>
+                <div id="allMappingFields" class="mapping-fields">
+                    <!-- All mapping fields will be dynamically generated here -->
                 </div>
             </div>
 
