@@ -8,6 +8,7 @@ public class AlignmentResult {
 
     private final Map<String, Property> alignmentMap;
     private final Map<String, AlignmentCandidate> uiMap;
+    private final String[] candidates;
     private final boolean ourOntology;
 
     public AlignmentResult(Map<String, Property> alignmentMap,
@@ -16,6 +17,7 @@ public class AlignmentResult {
                            boolean ourOntology) {
         this.alignmentMap = alignmentMap;
         this.uiMap = uiMap;
+        this.candidates = candidates;
         this.ourOntology = ourOntology;
     }
 
