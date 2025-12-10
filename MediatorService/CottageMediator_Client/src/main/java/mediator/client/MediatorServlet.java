@@ -191,7 +191,7 @@ public class MediatorServlet extends HttpServlet {
 			System.out.println(responseTurtle);
 			System.out.println("====================================");
 
-			List<CottageResult> cottages = parseResponseTurtle(responseTurtle, template.cfNamespace);
+			List<CottageResult> cottages = parseResponseTurtle(responseTurtle, template.cfNamespace, foundEntry);
 
 			String jsonResponse = buildJsonResponse(cottages, !template.isOurOntology, new HashMap<>(), null);
 			out.write(jsonResponse);
@@ -343,7 +343,7 @@ public class MediatorServlet extends HttpServlet {
 		setLiteral(subject, p, value);
 	}
 
-	private List<CottageResult> parseResponseTurtle(String responseTurtle, String cfNs) {
+	private List<CottageResult> parseResponseTurtle(String responseTurtle, String cfNs, MappingEntry foundEntry) {
 		List<CottageResult> results = new ArrayList<>();
 		if (responseTurtle == null || responseTurtle.trim().isEmpty())
 			return results;
@@ -352,20 +352,69 @@ public class MediatorServlet extends HttpServlet {
 		model.read(new StringReader(responseTurtle), null, "TURTLE");
 
 		Resource searchRespType = model.createResource(cfNs + "SearchResp");
-
-		Property pBookerName = model.createProperty(cfNs + "bookerName");
-		Property pBookingNumber = model.createProperty(cfNs + "bookingNumber");
-		Property pCottageID = model.createProperty(cfNs + "cottageID");
-		Property pCottageName = model.createProperty(cfNs + "cottageName");
-		Property pCottageAddress = model.createProperty(cfNs + "cottageAddress");
-		Property pImageURL = model.createProperty(cfNs + "imageURL");
-		Property pCapacity = model.createProperty(cfNs + "capacity");
-		Property pNumberOfBedrooms = model.createProperty(cfNs + "numberOfBedrooms");
-		Property pDistanceFromLake = model.createProperty(cfNs + "distanceFromLake");
-		Property pCityName = model.createProperty(cfNs + "cityName");
-		Property pCityDistance = model.createProperty(cfNs + "cityDistance");
-		Property pBookingStartDate = model.createProperty(cfNs + "bookingStartDate");
-		Property pBookingEndDate = model.createProperty(cfNs + "bookingEndDate");
+		
+		Property pBookerName, pBookingNumber, pCottageID ,pCottageName, pCottageAddress;
+		Property pImageURL, pCapacity, pNumberOfBedrooms, pDistanceFromLake, pCityName;
+		Property pCityDistance, pBookingStartDate, pBookingEndDate;
+		
+		if (foundEntry != null && !foundEntry.getMapping().isEmpty()) {
+			Map<String, AlignmentCandidate> mapping = foundEntry.getMapping();
+			
+			
+			AlignmentCandidate candidate = mapping.get("bookerName");
+			pBookerName = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("bookingNumber");
+			pBookingNumber = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("cottageID");
+			pCottageID = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("cottageName");
+			pCottageName = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("cottageAddress");
+			pCottageAddress = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("imageURL");
+			pImageURL = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("capacity");
+			pCapacity = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("numberOfBedrooms");
+			pNumberOfBedrooms = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("distanceFromLake");
+			pDistanceFromLake = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("cityName");
+			pCityName = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("cityDistance");
+			pCityDistance = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("bookingStartDate");
+			pBookingStartDate = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			candidate = mapping.get("bookingEndDate");
+			pBookingEndDate = model.createProperty(cfNs + candidate.getRemoteName());
+		} else {
+			pBookerName = model.createProperty(cfNs + "bookerName");
+			pBookingNumber = model.createProperty(cfNs + "bookingNumber");
+			pCottageID = model.createProperty(cfNs + "cottageID");
+			pCottageName = model.createProperty(cfNs + "cottageName");
+			pCottageAddress = model.createProperty(cfNs + "cottageAddress");
+			pImageURL = model.createProperty(cfNs + "imageURL");
+			pCapacity = model.createProperty(cfNs + "capacity");
+			pNumberOfBedrooms = model.createProperty(cfNs + "numberOfBedrooms");
+			pDistanceFromLake = model.createProperty(cfNs + "distanceFromLake");
+			pCityName = model.createProperty(cfNs + "cityName");
+			pCityDistance = model.createProperty(cfNs + "cityDistance");
+			pBookingStartDate = model.createProperty(cfNs + "bookingStartDate");
+			pBookingEndDate = model.createProperty(cfNs + "bookingEndDate");
+		}
+		
 
 		ResIterator it = model.listResourcesWithProperty(RDF.type, searchRespType);
 		while (it.hasNext()) {
