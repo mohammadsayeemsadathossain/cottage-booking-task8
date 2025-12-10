@@ -30,9 +30,11 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 @WebServlet("/MediatorServlet")
@@ -358,8 +360,12 @@ public class MediatorServlet extends HttpServlet {
 		Property pCityDistance, pBookingStartDate, pBookingEndDate;
 		
 		if (foundEntry != null && !foundEntry.getMapping().isEmpty()) {
+			Property hasMapping  = model.createProperty(SSWAP_NS, "hasMapping");
+		    Property mapsTo      = model.createProperty(SSWAP_NS, "mapsTo");
+		    Resource subjectType = model.createResource(SSWAP_NS + "Subject");
+		    
+		    
 			Map<String, AlignmentCandidate> mapping = foundEntry.getMapping();
-			
 			
 			AlignmentCandidate candidate = mapping.get("bookerName");
 			pBookerName = model.createProperty(cfNs + candidate.getRemoteName());
@@ -399,6 +405,40 @@ public class MediatorServlet extends HttpServlet {
 			
 			candidate = mapping.get("bookingEndDate");
 			pBookingEndDate = model.createProperty(cfNs + candidate.getRemoteName());
+			
+			ResIterator subjects = model.listResourcesWithProperty(RDF.type, subjectType);
+			
+			while (subjects.hasNext()) {
+		        Resource subjectNode = subjects.nextResource();
+
+		        // 2) From the subject node, get all sswap:mapsTo blocks
+		        StmtIterator mts = subjectNode.listProperties(mapsTo);
+		        while (mts.hasNext()) {
+		            RDFNode obj = mts.nextStatement().getObject();
+		            if (!obj.isResource()) continue;
+
+		            Resource respNode = obj.asResource(); // this is one mapsTo block
+
+		            CottageResult cr = new CottageResult();
+					cr.bookerName = getLiteral(respNode, pBookerName);
+					cr.bookingNumber = getLiteral(respNode, pBookingNumber);
+					cr.cottageID = getLiteral(respNode, pCottageID);
+					cr.cottageName = getLiteral(respNode, pCottageName);
+					cr.cottageAddress = getLiteral(respNode, pCottageAddress);
+					cr.imageURL = getLiteral(respNode, pImageURL);
+					cr.capacity = getLiteral(respNode, pCapacity);
+					cr.numberOfBedrooms = getLiteral(respNode, pNumberOfBedrooms);
+					cr.distanceFromLake = getLiteral(respNode, pDistanceFromLake);
+					cr.cityName = getLiteral(respNode, pCityName);
+					cr.cityDistance = getLiteral(respNode, pCityDistance);
+					cr.bookingStartDate = getLiteral(respNode, pBookingStartDate);
+					cr.bookingEndDate = getLiteral(respNode, pBookingEndDate);
+
+		            results.add(cr);
+		        }
+		    }
+			
+			return results;
 		} else {
 			pBookerName = model.createProperty(cfNs + "bookerName");
 			pBookingNumber = model.createProperty(cfNs + "bookingNumber");
