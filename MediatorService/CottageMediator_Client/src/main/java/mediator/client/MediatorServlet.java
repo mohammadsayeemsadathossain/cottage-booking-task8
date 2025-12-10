@@ -66,6 +66,36 @@ public class MediatorServlet extends HttpServlet {
 				}.getType();
 
 				userMapped = gson.fromJson(userMappedJson, type);
+				
+				String knownRemoteUri = null;
+
+				for (AlignmentCandidate candidate : userMapped.values()) {
+				    if (candidate.getRemoteUri() != null && !candidate.getRemoteUri().isBlank()) {
+				    	String remoteUri = candidate.getRemoteUri();
+				        String baseUri;
+				        
+				        int hashIndex = remoteUri.indexOf('#');
+				        if (hashIndex != -1) {
+				            baseUri = remoteUri.substring(0, hashIndex);
+				        } else {
+				            baseUri = remoteUri;
+				        }
+				        
+				        knownRemoteUri = baseUri;
+				        break;
+				    }
+				}
+				
+				if (knownRemoteUri == null) {
+					knownRemoteUri = "http://localhost:8080/cottageBooking/onto/cottageOntology.owl";
+				}
+				
+				System.out.println(knownRemoteUri);
+				for (AlignmentCandidate candidate : userMapped.values()) {
+				    if (candidate.getRemoteUri() == null || candidate.getRemoteUri().isBlank()) {
+				        candidate.setRemoteUri(knownRemoteUri + "#" + candidate.getRemoteName());
+				    }
+				}
 
 			} else if (!"searchCottage".equals(reqType)) {
 				out.write("{\"error\":\"Invalid request type\"}");

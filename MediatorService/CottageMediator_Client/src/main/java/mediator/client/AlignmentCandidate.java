@@ -22,4 +22,8 @@ public class AlignmentCandidate {
     public String getRemoteName() { return remoteName; }
     public String getRemoteUri()  { return remoteUri; }
     public double getScore()      { return score; }
+    
+    public void setRemoteUri(String remoteUri) {
+        this.remoteUri = remoteUri;
+    }
 }
