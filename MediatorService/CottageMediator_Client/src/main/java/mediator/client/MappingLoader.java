@@ -2,6 +2,7 @@ package mediator.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,9 @@ public class MappingLoader {
         if (!file.exists()) {
         	return new ArrayList<>();
         }
-        
+        String fileContent = Files.readString(file.toPath());
+        if(fileContent.isEmpty() || fileContent.isBlank())
+        	return new ArrayList<>();
         return mapper.readValue(file, new TypeReference<List<MappingEntry>>() {});
     }
 
