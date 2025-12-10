@@ -1,6 +1,7 @@
 package mediator.client;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -57,6 +58,7 @@ public class MediatorServlet extends HttpServlet {
             
             if ("searchCottageWithMapping".equals(reqType)) {
             	String userMappedJson = request.getParameter("inputMapping");
+            	System.out.println("UserMappedJson: " + userMappedJson);
             	Gson gson = new Gson();
             	
             	Type type = new TypeToken<Map<String, AlignmentCandidate>>() {}.getType();
@@ -99,7 +101,7 @@ public class MediatorServlet extends HttpServlet {
             if (!userMapped.isEmpty()) {
             	MappingEntry entry = new MappingEntry(serviceURL, userMapped);
             	List<MappingEntry> list = List.of(entry);
-            	mappingLoader.saveJsonData("mapping.json", list);
+            	mappingLoader.saveJsonData(mappingFile().getAbsolutePath(), list);
             }
             
 
@@ -109,16 +111,20 @@ public class MediatorServlet extends HttpServlet {
             System.out.println("========================================");
             
             MappingEntry foundEntry = null;
-            List<MappingEntry> mappings = mappingLoader.loadJsonData("mapping.json");
+            List<MappingEntry> mappings = mappingLoader.loadJsonData(mappingFile().getAbsolutePath());
             for (MappingEntry entry : mappings) {
+            	System.out.println("entryUrl: " + entry.getURL() + " serviceUrl: " + serviceURL);
                 if (entry.getURL().equalsIgnoreCase(serviceURL)) {
                     foundEntry = entry;
+                    System.out.println("URL Matched for: " + serviceURL);
                     break;
                 }
             }
             
-
-
+            System.out.println("FoundEntry: " + foundEntry);
+            if(foundEntry != null)
+            	System.out.println("foundEntry URL: " + foundEntry.getURL());
+            
             RequestTemplate template = prepareRequestFromRdg(
                     rdgTurtle,
                     bookerName,
@@ -677,5 +683,13 @@ public class MediatorServlet extends HttpServlet {
             this.candidates = candidates;
         }
     }
+    
+    private File mappingFile() {
+		String catalina = System.getProperty("catalina.base");
+		File folder = catalina != null ? new File(catalina, "webapps/data") : new File("data");
+		if (!folder.exists())
+			folder.mkdirs();
+		return new File(folder, "mapping.json");
+	}
 }
 
