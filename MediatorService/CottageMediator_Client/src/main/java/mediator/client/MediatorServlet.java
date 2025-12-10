@@ -316,7 +316,7 @@ public class MediatorServlet extends HttpServlet {
 		setMappedLiteral(subject, model, mapping, "numberOfBedrooms", numberOfBedrooms);
 		setMappedLiteral(subject, model, mapping, "maxDistanceFromLake", maxDistanceFromLake);
 		setMappedLiteral(subject, model, mapping, "cityName", cityName);
-		setMappedLiteral(subject, model, mapping, "nearestCity", maxCityDistance);
+		setMappedLiteral(subject, model, mapping, "cityDistance", maxCityDistance);
 		setMappedLiteral(subject, model, mapping, "numberOfDays", numberOfDays);
 		setMappedLiteral(subject, model, mapping, "startDate", startDate);
 		setMappedLiteral(subject, model, mapping, "possibleShift", possibleShift);
